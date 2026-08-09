@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       minLength: [5, "length must be 5 characters long"],
       trim: true,
-      required:true
+      required: true,
     },
     email: {
       type: String,
@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      select:false,
+      select: false,
       minLength: [8, "password must be 8 character long"],
     },
     profile: {
@@ -33,18 +33,23 @@ const userSchema = new mongoose.Schema(
       enum: ["admin", "manager", "member"],
       default: "member",
     },
+    otp: {
+      type: String,
+    },
     isVerify: {
       type: Boolean,
       default: false,
     },
+    otpExpire:{
+      type:String
+    }
   },
   { timestamps: true },
 );
 
 userSchema.pre("save", async function () {
-  if (!this.isModified("password")) return ;
+  if (!this.isModified("password")) return;
   this.password = await bcrypt.hash(this.password, 10);
-;
 });
 userSchema.methods.comparePassword = async function (password) {
   return await bcrypt.compare(password, this.password);
