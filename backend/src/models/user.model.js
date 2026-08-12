@@ -23,6 +23,15 @@ const userSchema = new mongoose.Schema(
       select: false,
       minLength: [8, "password must be 8 character long"],
     },
+    status:{
+      type:String,
+      enum:['active' , 'blocked'],
+      default:'active'
+    },
+    isDeleted:{
+      type:Boolean,
+      default:false
+    },
     profile: {
       profilePic: {
         type: String,

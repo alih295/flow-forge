@@ -1,18 +1,12 @@
-const express = require('express')
-const { registerUser, otpVerify, loginUser } = require('../controllers/user.controller')
-const upload = require('../middleware/multer')
-const router = express.Router()
+const express = require("express");
+const { getUser, getSingleUser, updateUserStatusAndRole, deleteUser } = require("../controllers/user.controller");
+const { authUser, authorizeRole } = require("../middleware/auth.middleware");
+const router = express.Router();
 
-router.post('/user/register' ,upload.single('image') ,  registerUser)
-router.post('/verify-otp' ,otpVerify )
-router.post('/user/login' ,  loginUser)
-
-
-
+router.get("/get-users", authUser, getUser);
+router.get('/get-single-user/:id' , authUser ,getSingleUser )
+router.patch('/update-user-status-and-role/:id' , authUser , authorizeRole('manager' , 'admin') , updateUserStatusAndRole)
+router.delete('/delete-user/:id',authUser , authorizeRole('admin') , deleteUser)
 
 
-
-
-
-module.exports = router
-
+module.exports = router;

@@ -1,6 +1,6 @@
 # FlowForge Backend API Documentation
 
-This README documents the current authentication endpoints available in the backend.
+This README documents the current backend endpoints available for authentication and user management.
 
 Base URL:
 - http://localhost:5000/api
@@ -13,7 +13,7 @@ Register a new user and send an OTP to the provided email address.
 - POST /user/register
 
 ### Request
-Use form-data if you want to upload a profile image.
+Use `multipart/form-data` to upload a profile image.
 
 #### Body Parameters
 - name: string (required)
@@ -29,6 +29,12 @@ curl -X POST http://localhost:5000/api/user/register \
   -F "password=12345678" \
   -F "image=@/path/to/profile.jpg"
 ```
+
+> Exact request field names:
+> - `name`
+> - `email`
+> - `password`
+> - `image` (optional file upload)
 
 ### Success Response
 - Status: 201 Created
@@ -84,7 +90,7 @@ curl -X POST http://localhost:5000/api/verify-otp \
 
 ```json
 {
-  "message": "email is verified you can now login"
+  "message": "email is verified you can now login "
 }
 ```
 
@@ -129,8 +135,113 @@ curl -X POST http://localhost:5000/api/user/login \
   }'
 ```
 
-### Note
-The login route is defined, but the controller logic is not implemented yet in the current version.
+### Success Response
+- Status: 200 OK
+
+```json
+{
+  "user": {
+    "_id": "...",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "isVerify": true,
+    "role": "member",
+    "status": "active",
+    "profile": {
+      "profilePic": "https://..."
+    }
+  },
+  "token": "..."
+}
+```
+
+---
+
+## 4. Get Current User Profile
+
+### Endpoint
+- GET /user/profile
+
+### Description
+Returns the currently authenticated user's profile.
+
+### Authorization
+- Requires a valid auth cookie: `token`
+
+### Example Request
+```bash
+curl -X GET http://localhost:5000/api/user/profile \
+  -b "token=YOUR_JWT_COOKIE"
+```
+
+---
+
+## 5. Logout User
+
+### Endpoint
+- GET /logout
+
+### Description
+Clears the auth cookie and logs out the current user.
+
+### Example Request
+```bash
+curl -X GET http://localhost:5000/api/logout \
+  -b "token=YOUR_JWT_COOKIE"
+```
+```
+
+---
+
+## 6. User Management Endpoints
+
+### Get All Users
+- GET /user/get-users
+- Query parameters:
+  - `page`: number (optional, defaults to 1)
+  - `limit`: number (optional, defaults to 10)
+
+### Example Request
+```bash
+curl -X GET "http://localhost:5000/api/user/get-users?page=1&limit=10" \
+  -b "token=YOUR_JWT_COOKIE"
+```
+
+### Get Single User
+- GET /user/get-single-user/:id
+
+### Example Request
+```bash
+curl -X GET http://localhost:5000/api/user/get-single-user/USER_ID \
+  -b "token=YOUR_JWT_COOKIE"
+```
+
+### Update User Status and Role
+- PATCH /user/update-user-status-and-role/:id
+
+#### Request Body
+- role: string (optional, allowed values: `admin`, `manager`, `member`)
+- status: string (optional, allowed values: `active`, `blocked`)
+
+### Example Request
+```bash
+curl -X PATCH http://localhost:5000/api/user/update-user-status-and-role/USER_ID \
+  -H "Content-Type: application/json" \
+  -d '{
+    "role": "manager",
+    "status": "active"
+  }' \
+  -b "token=YOUR_JWT_COOKIE"
+```
+
+### Delete User
+- DELETE /user/delete-user/:id
+
+### Example Request
+```bash
+curl -X DELETE http://localhost:5000/api/user/delete-user/USER_ID \
+  -b "token=YOUR_JWT_COOKIE"
+```
 
 ---
 
