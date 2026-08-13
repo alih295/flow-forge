@@ -79,7 +79,7 @@ const otpVerify = async (req, res, next) => {
       err.statusCode = 400;
       return next(err);
     }
-    
+
     if (user.otp !== String(otp).trim()) {
       const err = new Error("Invalid OTP");
       err.statusCode = 400;
@@ -95,9 +95,9 @@ const otpVerify = async (req, res, next) => {
     user.otp = undefined;
     user.otpExpire = undefined;
     await user.save();
-    return res.status(200).json({
-      message: "email is verified you can now login ",
-    });
+    return res
+      .status(200)
+      .json({ success: true, message: "email is verified you can now login " });
   } catch (err) {
     return next(err);
   }
@@ -129,20 +129,22 @@ const loginUser = async (req, res, next) => {
     const token = user.generateToken();
     res.cookie("token", token);
 
-    return res.status(200).json({ user: user, token });
+    return res.status(200).json({ success: true, user: user, token });
   } catch (err) {
     return next(err);
   }
 };
 
 const getMe = async (req, res) => {
-  return res.status(200).json({ user: req.user });
+  return res.status(200).json({ success: true, user: req.user });
 };
 
 const logoutUser = async (req, res, next) => {
   res.clearCookie("token");
 
-  return res.status(200).json({ message: "user logout successfully" });
+  return res
+    .status(200)
+    .json({ succes: true, message: "user logout successfully" });
 };
 
 module.exports = { registerUser, otpVerify, loginUser, getMe, logoutUser };

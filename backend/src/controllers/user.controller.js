@@ -41,7 +41,7 @@ const getSingleUser = async (req, res, next) => {
       return next(err);
     }
 
-    return res.status(200).json({ user: user });
+    return res.status(200).json({success:true, user: user });
   } catch (err) {
     return next(err);
   }
@@ -69,25 +69,24 @@ const updateUserStatusAndRole = async (req, res, next) => {
       user.status = status;
     }
     await user.save();
-    return res.status(200).json({ user });
+    return res.status(200).json({ success: true, user });
   } catch (err) {
     return next(err);
   }
 };
-    const deleteUser = async(req,res,next)=>{
-        try{
-            const {id} = req.params
-            await userModel.findByIdAndDelete(id)
-            return res.status(200).json({message:'user deletd successfully'})
-        }catch(err){
-            return next(err)
-        }
+const deleteUser = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    await userModel.findByIdAndDelete(id);
+    return res.status(200).json({success:true , message: "user deletd successfully" });
+  } catch (err) {
+    return next(err);
+  }
+};
 
-
-
-    }
-
-
-
-
-module.exports = { getUser, getSingleUser, updateUserStatusAndRole , deleteUser };
+module.exports = {
+  getUser,
+  getSingleUser,
+  updateUserStatusAndRole,
+  deleteUser,
+};
