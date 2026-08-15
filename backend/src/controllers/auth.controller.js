@@ -23,7 +23,7 @@ const registerUser = async (req, res, next) => {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const otpExpire = new Date(Date.now() + 5 * 60 * 1000);
 
-    const user = await authModel.create({
+    const user = await userModel.create({
       name,
       email,
       otp,

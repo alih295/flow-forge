@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.post(
   "/user/register",
-  [
+  upload.single("image"),  [
     body("name")
       .trim()
       .notEmpty()
@@ -33,7 +33,6 @@ router.post(
       .withMessage("password must b 8 characters long"),
   ],
   validationResult,
-  upload.single("image"),
   registerUser,
 );
 router.post(
