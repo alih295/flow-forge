@@ -25,6 +25,6 @@ const workspaceSchema = new mongoose.Schema(
 );
 
 
-const workspaceModel = mongoose.model('workspae' , workspaceSchema)
+const workspaceModel = mongoose.model('workspace' , workspaceSchema)
 
 module.exports = workspaceModel

@@ -4,7 +4,7 @@ const { createWorkspace, getWorkspaces, getWorkspaceById, updateWorkspace } = re
 const router = express.Router()
 
 router.post('/workspace/create' , authUser , authorizeRole('admin' , 'manager') , createWorkspace)
-router.get('/workspace/get' , authUser , authorizeRole('admin' , 'manager') , getWorkspaces)
+router.get('/workspace/get' , authUser  , getWorkspaces)
 router.get('/workspace/by-id/:id' , authUser , getWorkspaceById)
 router.put('/workspace/update' , authUser , authorizeRole('manager' , 'admin'), updateWorkspace)
 
