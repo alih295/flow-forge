@@ -26,6 +26,10 @@ const workspaceMemberSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    invitedBy:{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"user"
+    }
   },
   { timestamps: true },
 );

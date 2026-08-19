@@ -39,22 +39,18 @@ const createWorkspace = async (req, res, next) => {
 
 const getWorkspaces = async (req, res, next) => {
   try {
-
-    if(req.user.role === 'admin'){
-      const workspace = await workspaceModel.find().populate('owner' , "-password")
-      return res.status(200).json({success:true , workspace})
+    if (req.user.role === "admin") {
+      const workspace = await workspaceModel
+        .find()
+        .populate("owner", "-password");
+      return res.status(200).json({ success: true, workspace });
     }
 
-    const memberShip = await workspaceMemberModel.find({user:req.user._id , status:"active"}).populate('workspace')
-    const workspace = memberShip.map((membership)=> membership.workspace)
-    return res.status(200).json({success:true , workspace})
-   
-    
-
-    
-
-
-
+    const memberShip = await workspaceMemberModel
+      .find({ user: req.user._id, status: "active" })
+      .populate("workspace");
+    const workspace = memberShip.map((membership) => membership.workspace);
+    return res.status(200).json({ success: true, workspace });
 
     const workspaces = await workspaceModel.find();
 
@@ -93,15 +89,16 @@ const getWorkspaceById = async (req, res, next) => {
 const updateWorkspace = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { title, description } = req.body;
-    const updatedWorkspace = await workspaceModel.findByIdAndUpdate(
+    const { name, description } = req.body;
+    const updateWorkspace = await workspaceModel.findByIdAndUpdate(
       id,
-      { title, description },
+      { name, description },
       { new: true },
     );
-    return res.status(201).json({ success: true, updatedWorkspace });
+
+    return res.status(201).json({ success: true, updateWorkspace });
   } catch (err) {
-    return next(err.message);
+    return next(err);
   }
 };
 
