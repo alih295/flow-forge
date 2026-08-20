@@ -12,12 +12,14 @@ const authRoute = require("../src/routes/auth.route");
 const userRoute = require('../src/routes/user.route')
 const workspaceRoute = require('./routes/workspace.route')
 const workspaceMemberRoute = require('../src/routes/workspace.member.route')
+const taskRoute = require('../src/routes/task.route')
 
 // all Appi's are use here
 app.use("/api", authRoute);
 app.use('/api' , userRoute)
 app.use('/api',workspaceRoute)
 app.use('/api' , workspaceMemberRoute)
+app.use('/api' , taskRoute)
 
 app.get("/health", (req, res) => {
   res.send("good");

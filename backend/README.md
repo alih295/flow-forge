@@ -480,6 +480,62 @@ curl -X DELETE http://localhost:5000/api/workspace/WORKSPACE_ID/remove-member/US
 
 ---
 
+## 9. Task Endpoints
+
+### Create Task
+
+- POST `/workspaces/:id/tasks`
+- `id`: workspace ObjectId (required)
+- Requires authentication and an active workspace membership. Global admins can access any workspace.
+- Required user role: global `admin`, or workspace `owner`/`manager`
+- Content-Type: `application/json`
+
+#### Request Body Fields
+
+- `title`: string (required)
+- `description`: string (optional)
+- `assignedTo`: user ObjectId (optional; the user must be an active member of the workspace)
+- `priority`: string (optional, allowed values: `low`, `medium`, `high`, `urgent`; defaults to `medium`)
+- `dueDate`: date string (optional)
+
+#### Example Request
+
+```bash
+curl -X POST http://localhost:5000/api/workspaces/WORKSPACE_ID/tasks \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "title": "Prepare release notes",
+    "description": "Document the changes for the next release",
+    "assignedTo": "USER_ID",
+    "priority": "high",
+    "dueDate": "2026-09-01"
+  }'
+```
+
+#### Success Response
+
+- Status: `200 OK`
+
+```json
+{
+  "success": true,
+  "task": {
+    "_id": "TASK_ID",
+    "title": "Prepare release notes",
+    "description": "Document the changes for the next release",
+    "workspace": "WORKSPACE_ID",
+    "createdBy": "USER_ID",
+    "assignedTo": "ASSIGNED_USER_ID",
+    "status": "todo",
+    "priority": "high",
+    "dueDate": "2026-09-01T00:00:00.000Z"
+  }
+}
+```
+
+---
+
 ## Workspace Error Status Codes
 
 Errors use this response format:
