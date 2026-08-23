@@ -3,9 +3,9 @@ const workspaceModel = require("../models/workspace.model");
 
 const authWorkspace = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const { workspaceId } = req.params;
 
-    const workspace = await workspaceModel.findById(id);
+    const workspace = await workspaceModel.findById(workspaceId);
 
     if (!workspace) {
       const err = new Error("workspace not found");
@@ -14,7 +14,7 @@ const authWorkspace = async (req, res, next) => {
     }
 
     const member = await workspaceMemberModel.findOne({
-      workspace: id,
+      workspace: workspaceId,
       user: req.user._id,
       status: "active",
     });

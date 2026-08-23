@@ -512,7 +512,7 @@ curl -X POST http://localhost:5000/api/workspaces/WORKSPACE_ID/tasks \
     "dueDate": "2026-09-01"
   }'
 ```
-
+ 
 #### Success Response
 
 - Status: `200 OK`
@@ -527,7 +527,7 @@ curl -X POST http://localhost:5000/api/workspaces/WORKSPACE_ID/tasks \
     "workspace": "WORKSPACE_ID",
     "createdBy": "USER_ID",
     "assignedTo": "ASSIGNED_USER_ID",
-    "status": "todo",
+    "st atus": "todo",
     "priority": "high",
     "dueDate": "2026-09-01T00:00:00.000Z"
   }

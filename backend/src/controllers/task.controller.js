@@ -49,5 +49,112 @@ const createTask = async (req, res, next) => {
     return next(err);
   }
 };
+const getTasks = async (req, res, next) => {
+  try {
+    const tasks = await taskModel
+      .find({ workspace: req.workspace._id })
+      .populate("assignedTo", "name email")
+      .populate("createdBy", "name email");
 
-module.exports = createTask;
+    if (!tasks) {
+      const err = new Error("task not found");
+      err.statusCode = 400;
+      return next(err);
+    }
+
+    return res.status(200).json({
+      success: true,
+      tasks,
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+const updateTaskDetails = async (req, res, next) => {
+  try {
+    const { taskId } = req.params;
+    const { title, description, priority, dueDate, assignedTo } = req.body;
+
+    if (
+      req.user.role !== "admin" &&
+      !["owner", "manager"].includes(req.workspaceMember.role)
+    ) {
+      const err = new Error("you don't have to access this route");
+      err.statusCode = 400;
+      return next(err);
+    }
+
+    const task = await taskModel.findOne({
+      workspace: req.workspace._id,
+      _id: taskId,
+    });
+    if (!task) {
+      const err = new Error("please chose a valid task");
+      err.statusCode = 403;
+      return next(err);
+    }
+    if (assignedTo) {
+      const isAssignedUser = await workspaceMemberModel.findOne({
+        workspace: req.workspace._id,
+        user: assignedTo,
+        status: "active",
+      });
+      if (!user) {
+        const err = new Error("please choose a valid user");
+        err.statusCode = 400;
+        return next(err);
+      }
+      task.assignedTo = assignedTo;
+    }
+    if (title !== undefined) task.title = title;
+    if (description !== undefined) task.description = description;
+    if (priority !== undefined) task.priority = priority;
+    if (dueDate !== undefined) task.dueDate = dueDate;
+
+    await task.save();
+
+    return res.status(200).json({ success: true, task });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+const updateTaskStatus = async (req, res, next) => {
+  try {
+    const { taskId } = req.params;
+    const { status } = req.body;
+    if (!["todo", "in-progress", "completed"].includes(status)) {
+  const err = new Error("Please choose a valid status");
+  err.statusCode = 400;
+  return next(err);
+}
+
+    const task = await taskModel.findOne({
+      _id: taskId,
+      workspace: req.workspace._id,
+    });
+    if (!task) {
+      const err = new Error("task not found");
+      err.statusCode = 400;
+      return next(err);
+    }
+    if (req.user.role === "admin") {
+    } else if (["owner", "manager"].includes(req.workspaceMember.role)) {
+    } else if (task.assignedTo.toString() === req.user._id.toString()) {
+    } else {
+      const err = new Error("you can;t update the status");
+      err.statusCode = 400;
+      return next(err);
+    }
+
+    task.status = status;
+    await task.save();
+
+    return res.status(200).json({ success: true, task });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+module.exports = { createTask, getTasks, updateTaskDetails , updateTaskStatus };
