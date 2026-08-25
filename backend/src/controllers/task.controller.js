@@ -1,6 +1,7 @@
 const taskModel = require("../models/Task.model");
 const userModel = require("../models/user.model");
 const workspaceMemberModel = require("../models/workspace.member.model");
+const createActivityLog = require("../services/activity.log.service");
 
 const createTask = async (req, res, next) => {
   try {
@@ -43,6 +44,14 @@ const createTask = async (req, res, next) => {
       dueDate,
     });
     if (createdTask) {
+      await createActivityLog({
+        workspaceId: req.workspace._id,
+        userId: req.user._id,
+        action: "new task created",
+        entityType: "task",
+        entityId: createdTask._id,
+      });
+
       return res.status(200).json({ success: true, task: createdTask });
     }
   } catch (err) {
@@ -113,6 +122,13 @@ const updateTaskDetails = async (req, res, next) => {
     if (dueDate !== undefined) task.dueDate = dueDate;
 
     await task.save();
+    await createActivityLog({
+      workspaceId: req.workspace._id,
+      userId: req.user._id,
+      action: "update task details",
+      entityType: "task",
+      entityId: task._id,
+    });
 
     return res.status(200).json({ success: true, task });
   } catch (err) {
@@ -125,10 +141,10 @@ const updateTaskStatus = async (req, res, next) => {
     const { taskId } = req.params;
     const { status } = req.body;
     if (!["todo", "in-progress", "completed"].includes(status)) {
-  const err = new Error("Please choose a valid status");
-  err.statusCode = 400;
-  return next(err);
-}
+      const err = new Error("Please choose a valid status");
+      err.statusCode = 400;
+      return next(err);
+    }
 
     const task = await taskModel.findOne({
       _id: taskId,
@@ -150,6 +166,13 @@ const updateTaskStatus = async (req, res, next) => {
 
     task.status = status;
     await task.save();
+    await createActivityLog({
+      workspaceId: req.workspace._id,
+      userId: req.user._id,
+      action: "change the staus of task",
+      entityType: "task",
+      entityId: task._id,
+    });
 
     return res.status(200).json({ success: true, task });
   } catch (err) {
@@ -157,4 +180,4 @@ const updateTaskStatus = async (req, res, next) => {
   }
 };
 
-module.exports = { createTask, getTasks, updateTaskDetails , updateTaskStatus };
+module.exports = { createTask, getTasks, updateTaskDetails, updateTaskStatus };

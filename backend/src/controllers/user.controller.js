@@ -1,5 +1,6 @@
 const { ConnectionStates } = require("mongoose");
 const userModel = require("../models/user.model");
+const createActivityLog = require("../services/activity.log.service");
 
 const getUser = async (req, res, next) => {
   try {
@@ -41,7 +42,7 @@ const getSingleUser = async (req, res, next) => {
       return next(err);
     }
 
-    return res.status(200).json({success:true, user: user });
+    return res.status(200).json({ success: true, user: user });
   } catch (err) {
     return next(err);
   }
@@ -69,6 +70,14 @@ const updateUserStatusAndRole = async (req, res, next) => {
       user.status = status;
     }
     await user.save();
+    await user.save();
+
+    await createActivityLog({
+      userId: req.user._id,
+      action: role ? "user_role_changed" : "user_status_changed",
+      entityType: "user",
+      entityId: user._id,
+    });
     return res.status(200).json({ success: true, user });
   } catch (err) {
     return next(err);
@@ -78,7 +87,15 @@ const deleteUser = async (req, res, next) => {
   try {
     const { id } = req.params;
     await userModel.findByIdAndDelete(id);
-    return res.status(200).json({success:true , message: "user deletd successfully" });
+    await createActivityLog({
+      userId: req.user._id,
+      action: "user is deletd",
+      entityType: "user",
+      entityId: req.user._id,
+    });
+    return res
+      .status(200)
+      .json({ success: true, message: "user deletd successfully" });
   } catch (err) {
     return next(err);
   }

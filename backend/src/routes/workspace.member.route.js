@@ -6,10 +6,10 @@ const router = express.Router()
 
 
 
-router.get('/workspaces/:id/members' , authUser , authWorkspace , getWorkspaceMember)
-router.post('/workspace/:id/add-members' ,authUser , authorizeRole('admin' , 'manager') , authWorkspace , addWorkspaceMembers)
+router.get('/workspaces/:workspaceId/members' , authUser , authWorkspace , getWorkspaceMember)
+router.post('/workspace/:workspaceId/add-members' ,authUser , authorizeRole('admin' , 'manager') , authWorkspace , addWorkspaceMembers)
 
-router.delete('/workspace/:id/remove-member/:userId' , authUser ,  authWorkspace , removeWorkspaceMember)
+router.delete('/workspace/:workspaceId/remove-member/:userId' , authUser ,  authWorkspace , removeWorkspaceMember)
 
 
 

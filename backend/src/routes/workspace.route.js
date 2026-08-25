@@ -5,8 +5,8 @@ const router = express.Router()
 
 router.post('/workspace/create' , authUser , authorizeRole('admin' , 'manager') , createWorkspace)
 router.get('/workspace/get' , authUser  , getWorkspaces)
-router.get('/workspace/by-id/:id' , authUser , getWorkspaceById)
-router.patch('/workspace/update/:id' , authUser , authorizeRole('manager' , 'admin'), updateWorkspace)
+router.get('/workspace/by-id/:workspaceId' , authUser , getWorkspaceById)
+router.patch('/workspace/update/:workspaceId' , authUser , authorizeRole('manager' , 'admin'), updateWorkspace)
 
 
 

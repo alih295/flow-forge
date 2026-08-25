@@ -1,5 +1,6 @@
 const userModel = require("../models/user.model");
 const workspaceMemberModel = require("../models/workspace.member.model");
+const createActivityLog = require("../services/activity.log.service");
 
 const getWorkspaceMember = async (req, res, next) => {
   try {
@@ -15,7 +16,7 @@ const getWorkspaceMember = async (req, res, next) => {
 
 const addWorkspaceMembers = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const { workspaceId } = req.params;
     const { userId, role } = req.body;
 
     if (
@@ -58,6 +59,13 @@ const addWorkspaceMembers = async (req, res, next) => {
       invitedBy: req.user._id,
       joinedAt: new Date(),
     });
+    await createActivityLog({
+      workspaceId,
+      userId: req.user._id,
+      action: "add members to wroksapce",
+      entityType: "workspace member",
+      entityId: addMembers._id,
+    });
 
     return res.status(200).json({ succes: true, member: addMembers });
   } catch (err) {
@@ -67,15 +75,13 @@ const addWorkspaceMembers = async (req, res, next) => {
 
 const removeWorkspaceMember = async (req, res, next) => {
   try {
-    const { userId, id } = req.params;
+    const { userId, workspaceId } = req.params;
 
     if (String(userId) === String(req.workspace.owner)) {
-  const err = new Error("Owner cannot be deleted");
-  err.statusCode = 400;
-  return next(err);
-}
-
-
+      const err = new Error("Owner cannot be deleted");
+      err.statusCode = 400;
+      return next(err);
+    }
 
     if (req.workspaceMember?.role !== "owner" && req.user.role !== "admin") {
       const err = new Error("you don't have access to remove this user");
@@ -84,7 +90,7 @@ const removeWorkspaceMember = async (req, res, next) => {
     }
     const deletedMember = await workspaceMemberModel.findOneAndDelete({
       user: userId,
-      workspace: id,
+      workspace: workspaceId,
     });
 
     if (!deletedMember) {
@@ -92,6 +98,13 @@ const removeWorkspaceMember = async (req, res, next) => {
       err.statusCode = 404;
       return next(err);
     }
+    await createActivityLog({
+      workspaceId,
+      userId: req.user._id,
+      action: "remove workspace member",
+      entityType: "workspace member",
+      entityId: deletedMember._id,
+    });
     return res
       .status(200)
       .json({ success: true, nessage: "user removed successfully" });

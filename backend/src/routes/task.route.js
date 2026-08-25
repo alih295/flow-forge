@@ -5,10 +5,10 @@ const authWorkspace = require('../middleware/authorize.workspace')
 const router  = express.Router()
 
 
-router.post('/workspaces/:id/tasks' , authUser , authWorkspace , createTask )
+router.post('/workspaces/:workspaceId/tasks' , authUser , authWorkspace , createTask )
 router.get('/workspace/:workspaceId/get-tasks' , authUser , authWorkspace , getTasks)
 router.patch('/workspace/:workspaceId/tasks/:taskId' , authUser , authWorkspace , updateTaskDetails )
-router.patch('/worksoace/:workspaceId/tasks/:taskId/status' , authUser , authWorkspace , updateTaskStatus)
+router.patch('/workspace/:workspaceId/tasks/:taskId/status' , authUser , authWorkspace , updateTaskStatus)
 
 
 

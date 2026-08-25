@@ -2,6 +2,7 @@ const { default: mongoose } = require("mongoose");
 const userModel = require("../models/user.model");
 const workspaceMemberModel = require("../models/workspace.member.model");
 const workspaceModel = require("../models/workspace.model");
+const createActivityLog = require("../services/activity.log.service");
 
 const createWorkspace = async (req, res, next) => {
   try {
@@ -88,14 +89,20 @@ const getWorkspaceById = async (req, res, next) => {
 
 const updateWorkspace = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const { workspaceId } = req.params;
     const { name, description } = req.body;
     const updateWorkspace = await workspaceModel.findByIdAndUpdate(
       id,
       { name, description },
       { new: true },
     );
-
+    await createActivityLog({
+      workspaceId,
+      userId: req.user._id,
+      action: "workspace created",
+      entityType: "workspace",
+      entityId: workspaceId,
+    });
     return res.status(201).json({ success: true, updateWorkspace });
   } catch (err) {
     return next(err);
