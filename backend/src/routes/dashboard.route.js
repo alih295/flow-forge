@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { authUser, authorizeRole } = require("../middleware/auth.middleware");
-const { getDashboardData } = require("../controllers/dashboard.controller");
+const { getDashboardData, workspaceData } = require("../controllers/dashboard.controller");
 const authWorkspace = require("../middleware/authorize.workspace");
 
 router.get("/admin/dashboard",
@@ -9,6 +9,6 @@ router.get("/admin/dashboard",
   authorizeRole("admin"),
   getDashboardData,
 );
-router.get('/workspace/:workspaceId/dashboard' , authUser, authWorkspace , )
+router.get('/workspace/:workspaceId/dashboard' , authUser, authWorkspace , workspaceData)
 
 module.exports = router;
