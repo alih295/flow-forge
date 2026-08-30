@@ -3,6 +3,7 @@ const userModel = require("../models/user.model");
 const workspaceMemberModel = require("../models/workspace.member.model");
 const workspaceModel = require("../models/workspace.model");
 const createActivityLog = require("../services/activity.log.service");
+const createNotification = require("../services/notification.service");
 
 const createWorkspace = async (req, res, next) => {
   try {
@@ -27,6 +28,22 @@ const createWorkspace = async (req, res, next) => {
       role: "owner",
       status: "active",
       joinedAt: new Date(),
+    });
+    await createActivityLog({
+      workspaceId: workspace._id,
+      userId: req.user._id,
+      action: "create workspace",
+      entityType: "workspace",
+      entityId: workspace._id,
+    });
+    await createNotification({
+      senderId: req.user._id,
+      recipientId: workspace.user,
+      type: "create_workspace",
+      title: "created workspace",
+      message: "workspace is created",
+      entityType: "workspace",
+      entityId: workspace._id,
     });
 
     return res.status(200).json({
@@ -102,6 +119,15 @@ const updateWorkspace = async (req, res, next) => {
       action: "workspace created",
       entityType: "workspace",
       entityId: workspaceId,
+    });
+    await createNotification({
+      senderId: req.user._id,
+      recipientId: updateWorkspace.user,
+      type: "update_wprkspace",
+      title: "update details of workspace",
+      message: "update details of workspace",
+      entityType: "workspace",
+      entityId: updateWorkspace._id,
     });
     return res.status(201).json({ success: true, updateWorkspace });
   } catch (err) {

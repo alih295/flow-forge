@@ -2,6 +2,7 @@ const taskModel = require("../models/Task.model");
 const userModel = require("../models/user.model");
 const workspaceMemberModel = require("../models/workspace.member.model");
 const createActivityLog = require("../services/activity.log.service");
+const createNotification = require("../services/notification.service");
 
 const createTask = async (req, res, next) => {
   try {
@@ -48,6 +49,16 @@ const createTask = async (req, res, next) => {
         workspaceId: req.workspace._id,
         userId: req.user._id,
         action: "new task created",
+        entityType: "task",
+        entityId: createdTask._id,
+      });
+      await createNotification({
+        senderId: req.user._id,
+        workspaceId: req.workspace._id,
+        recipientId: assignedTo,
+        type: "task-assigned",
+        title: "new task is assigned",
+        message: "task is created and assigned to you",
         entityType: "task",
         entityId: createdTask._id,
       });
@@ -109,12 +120,22 @@ const updateTaskDetails = async (req, res, next) => {
         user: assignedTo,
         status: "active",
       });
-      if (!user) {
+      if (!isAssignedUser) {
         const err = new Error("please choose a valid user");
         err.statusCode = 400;
         return next(err);
       }
       task.assignedTo = assignedTo;
+      await createNotification({
+        senderId: req.user._id,
+        recipientId: assignedTo,
+        workspaceId: req.workspace._id,
+        type: "update-task-details",
+        title: "update user ",
+        message: "update user of a workspace like add new or previous user",
+        entityType: "task",
+        entityId: task._id,
+      });
     }
     if (title !== undefined) task.title = title;
     if (description !== undefined) task.description = description;
@@ -170,6 +191,16 @@ const updateTaskStatus = async (req, res, next) => {
       workspaceId: req.workspace._id,
       userId: req.user._id,
       action: "change the staus of task",
+      entityType: "task",
+      entityId: task._id,
+    });
+    await createNotification({
+      senderId: req.user._id,
+      recipientId: task.user,
+      workspaceId: req.workspace._id,
+      type: "task_staus_changed",
+      title: "status changed",
+      message: "update status of task",
       entityType: "task",
       entityId: task._id,
     });

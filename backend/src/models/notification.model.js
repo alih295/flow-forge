@@ -19,6 +19,9 @@ const notificationSchema = new mongoose.Schema(
         "member_added",
         "member_removed",
         "role_changed",
+        'update-task-details',
+        'create_workspace',
+        'update_workspace'
       ],
       required: true,
     },

@@ -1,6 +1,7 @@
 const userModel = require("../models/user.model");
 const workspaceMemberModel = require("../models/workspace.member.model");
 const createActivityLog = require("../services/activity.log.service");
+const createNotification = require("../services/notification.service");
 
 const getWorkspaceMember = async (req, res, next) => {
   try {
@@ -66,6 +67,16 @@ const addWorkspaceMembers = async (req, res, next) => {
       entityType: "workspace member",
       entityId: addMembers._id,
     });
+    await createNotification({
+      senderId: req.user._id,
+      recipientId: addMembers._id,
+      workspace: req.workspace._id,
+      title: "add member to wworkspace",
+      type: "member_added",
+      message: "add member to this workspace ",
+      entityType: "workspace member",
+      entityId: addMembers,
+    });
 
     return res.status(200).json({ succes: true, member: addMembers });
   } catch (err) {
@@ -103,6 +114,16 @@ const removeWorkspaceMember = async (req, res, next) => {
       userId: req.user._id,
       action: "remove workspace member",
       entityType: "workspace member",
+      entityId: deletedMember._id,
+    });
+    await createNotification({
+      senderId: req.user._id,
+      recipientId: deletedMember._id,
+      workspaceId: req.workspace._id,
+      type: "member_removed",
+      title: "dlete member ",
+      message: "remove from that task ",
+      entityType: "member",
       entityId: deletedMember._id,
     });
     return res
