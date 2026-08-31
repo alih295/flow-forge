@@ -43,7 +43,7 @@ const addWorkspaceMembers = async (req, res, next) => {
 
     const existingMember = await workspaceMemberModel.findOne({
       user: userId,
-      workspace: id,
+      workspace: workspaceId,
     });
 
     if (existingMember) {
@@ -53,7 +53,7 @@ const addWorkspaceMembers = async (req, res, next) => {
     }
 
     const addMembers = await workspaceMemberModel.create({
-      workspace: id,
+      workspace: workspaceId,
       user: userId,
       role,
       status: "active",
@@ -64,12 +64,12 @@ const addWorkspaceMembers = async (req, res, next) => {
       workspaceId,
       userId: req.user._id,
       action: "add members to wroksapce",
-      entityType: "workspace member",
+      entityType:'member',
       entityId: addMembers._id,
     });
     await createNotification({
       senderId: req.user._id,
-      recipientId: addMembers._id,
+      recipientId: addMembers.user,
       workspace: req.workspace._id,
       title: "add member to wworkspace",
       type: "member_added",

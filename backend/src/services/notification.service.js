@@ -1,3 +1,6 @@
+const notificationModel = require('../models/notification.model')
+
+
 const createNotification = async ({
   senderId,
   recipientId,
