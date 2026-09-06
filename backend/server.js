@@ -8,19 +8,24 @@ const connectToDb = require("./src/config/dbConnection");
 const port = process.env.PORT;
 const { Server } = require("socket.io");
 const socketAuth = require("./src/middleware/socket.auth.middleware");
+const { initSocket } = require("./src/socket/socket");
 
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: "*",
-  },
-});
+const server = http.createServer(app)
+const io = initSocket(server)
 io.use(socketAuth);
+
+
+
+
+
 io.on("connection", (socket) => {
-  console.log("user is conenected", socket.id);
+  console.log("user is conenected", socket.user._id );
+  const userRoom = `user_${socket.user._id}`;
+  socket.join(userRoom);
+  console.log(`user joined room ${userRoom}`);
 
   socket.on("disconnect", () => {
-    console.log("user disconnected", socket.id);
+    console.log("user disconnected", socket.user);
   });
 });
 

@@ -3,6 +3,7 @@ const userModel = require("../models/user.model");
 const workspaceMemberModel = require("../models/workspace.member.model");
 const createActivityLog = require("../services/activity.log.service");
 const createNotification = require("../services/notification.service");
+const { getIO } = require("../socket/socket");
 
 const createTask = async (req, res, next) => {
   try {
@@ -56,11 +57,16 @@ const createTask = async (req, res, next) => {
         senderId: req.user._id,
         workspaceId: req.workspace._id,
         recipientId: assignedTo,
-        type: "task-assigned",
+        type: "task_assigned",
         title: "new task is assigned",
         message: "task is created and assigned to you",
         entityType: "task",
         entityId: createdTask._id,
+      });
+      const io = getIO();
+
+      io.to(`user:${createNotification.recipientId}`).emit("new notification", {
+        notification: createNotification,
       });
 
       return res.status(200).json({ success: true, task: createdTask });
@@ -211,4 +217,47 @@ const updateTaskStatus = async (req, res, next) => {
   }
 };
 
-module.exports = { createTask, getTasks, updateTaskDetails, updateTaskStatus };
+const deleteTask = async (req, res, next) => {
+  try {
+    const { taskId } = req.params;
+
+    if (
+      req.user.role !== "admin" &&
+      !["owner", "manager"].includes(req.workspaceMember?.role)
+    ) {
+      const err = new Error("you don't have permission to this route");
+      err.statusCode = 403;
+      return next(err);
+    }
+
+    const task = await taskModel.findOne({
+      _id: taskId,
+      workspace: req.workspace._id,
+    });
+    if (!task) {
+      const err = new Error("task not found");
+      err.statusCode = 404;
+      return next(err);
+    }
+    await taskModel.findByIdAndDelete(task._id);
+    await createActivityLog({
+      userId: req.user._id,
+      workspaceId: req.workspace._id,
+      action: "delete task",
+      entityType: "task",
+      entityId: taskId,
+      description: "task is deleted ",
+    });
+    return res.status(200).json({ success: true, message: "task is deleted" });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+module.exports = {
+  createTask,
+  getTasks,
+  updateTaskDetails,
+  updateTaskStatus,
+  deleteTask,
+};

@@ -3,9 +3,9 @@ const userModel = require("../models/user.model");
 
 const socketAuth = async (socket, next) => {
   try {
-    let token = 
-      socket.handshake.auth?.token || 
-      socket.handshake.headers?.token || 
+    let token =
+      socket.handshake.auth?.token ||
+      socket.handshake.headers?.token ||
       socket.handshake.query?.token;
 
     if (!token) {
