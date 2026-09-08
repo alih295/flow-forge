@@ -14,7 +14,8 @@ const workspaceRoute = require("./routes/workspace.route");
 const workspaceMemberRoute = require("../src/routes/workspace.member.route");
 const taskRoute = require("../src/routes/task.route");
 const dashboardRoute = require("../src/routes/dashboard.route");
-const notificationRoute = require('../src/routes/notification.route')
+const notificationRoute = require("../src/routes/notification.route");
+const commentRoute = require("../src/routes/comment.route");
 
 // all Appi's are use here
 app.use("/api", authRoute);
@@ -23,7 +24,8 @@ app.use("/api", workspaceRoute);
 app.use("/api", workspaceMemberRoute);
 app.use("/api", taskRoute);
 app.use("/api", dashboardRoute);
-app.use('/api' , notificationRoute)
+app.use("/api", notificationRoute);
+app.use("/api", commentRoute);
 
 app.get("/health", (req, res) => {
   res.send("good");

@@ -1,27 +1,31 @@
 # FlowForge Backend API Documentation
 
-This README documents the current backend endpoints available for authentication and user management.
-
 Base URL:
-- http://localhost:5000/api
 
-## 1. Register User
+```text
+http://localhost:5000/api
+```
 
-Register a new user and send an OTP to the provided email address.
+Protected endpoints accept either the `token` cookie or an
+`Authorization: Bearer YOUR_JWT_TOKEN` header. Replace placeholder values such
+as `WORKSPACE_ID`, `TASK_ID`, `USER_ID`, and `NOTIFICATION_ID` with real IDs.
 
-### Endpoint
-- POST /user/register
+## 1. Authentication
 
-### Request
-Use `multipart/form-data` to upload a profile image.
+### Register User
 
-#### Body Parameters
-- name: string (required)
-- email: string (required)
-- password: string (required)
-- image: file (optional)
+- `POST /user/register`
+- Content-Type: `multipart/form-data`
 
-### Example Request
+#### Form Fields
+
+- `name`: string, required (minimum 5 characters)
+- `email`: string, required
+- `password`: string, required (minimum 8 characters)
+- `image`: file, optional
+
+#### Example Request
+
 ```bash
 curl -X POST http://localhost:5000/api/user/register \
   -F "name=John Doe" \
@@ -30,52 +34,22 @@ curl -X POST http://localhost:5000/api/user/register \
   -F "image=@/path/to/profile.jpg"
 ```
 
-> Exact request field names:
-> - `name`
-> - `email`
-> - `password`
-> - `image` (optional file upload)
+### Verify OTP
 
-### Success Response
-- Status: 201 Created
+- `POST /verify-otp`
+- Content-Type: `application/json`
+
+#### Request Body
 
 ```json
 {
-  "success": true,
-  "message": "OTP sent to your email. Please verify to continue.",
-  "email": "john@example.com"
+  "email": "john@example.com",
+  "otp": "123456"
 }
 ```
 
-### Error Responses
-- Status: 400 Bad Request
-```json
-{
-  "message": "user is already exist"
-}
-```
+#### Example Request
 
-- Status: 500 Internal Server Error
-```json
-{
-  "message": "Internal server error"
-}
-```
-
----
-
-## 2. Verify OTP
-
-Verify the OTP sent to the user email.
-
-### Endpoint
-- POST /verify-otp
-
-### Request Body
-- email: string (required)
-- otp: string (required)
-
-### Example Request
 ```bash
 curl -X POST http://localhost:5000/api/verify-otp \
   -H "Content-Type: application/json" \
@@ -85,47 +59,22 @@ curl -X POST http://localhost:5000/api/verify-otp \
   }'
 ```
 
-### Success Response
-- Status: 200 OK
+### Login User
+
+- `POST /user/login`
+- Content-Type: `application/json`
+
+#### Request Body
 
 ```json
 {
-  "message": "email is verified you can now login "
+  "email": "john@example.com",
+  "password": "12345678"
 }
 ```
 
-### Error Responses
-- Status: 400 Bad Request
-```json
-{
-  "message": "Invalid OTP"
-}
-```
+#### Example Request
 
-```json
-{
-  "message": "OTP is Expire"
-}
-```
-
-```json
-{
-  "message": "user is not found"
-}
-```
-
----
-
-## 3. Login User
-
-### Endpoint
-- POST /user/login
-
-### Request Body
-- email: string (required)
-- password: string (required)
-
-### Example Request
 ```bash
 curl -X POST http://localhost:5000/api/user/login \
   -H "Content-Type: application/json" \
@@ -135,131 +84,81 @@ curl -X POST http://localhost:5000/api/user/login \
   }'
 ```
 
-### Success Response
-- Status: 200 OK
+### Get Current User
 
-```json
-{
-  "user": {
-    "_id": "...",
-    "name": "John Doe",
-    "email": "john@example.com",
-    "isVerify": true,
-    "role": "member",
-    "status": "active",
-    "profile": {
-      "profilePic": "https://..."
-    }
-  },
-  "token": "..."
-}
-```
+- `GET /user/profile`
+- Requires authentication.
 
----
-
-## 4. Get Current User Profile
-
-### Endpoint
-- GET /user/profile
-
-### Description
-Returns the currently authenticated user's profile.
-
-### Authorization
-- Requires a valid auth cookie: `token`
-
-### Example Request
 ```bash
-curl -X GET http://localhost:5000/api/user/profile \
-  -b "token=YOUR_JWT_COOKIE"
+curl http://localhost:5000/api/user/profile \
+  -b "token=YOUR_JWT_TOKEN"
 ```
 
----
+### Logout User
 
-## 5. Logout User
+- `GET /logout`
+- Requires authentication.
 
-### Endpoint
-- GET /logout
-
-### Description
-Clears the auth cookie and logs out the current user.
-
-### Example Request
 ```bash
-curl -X GET http://localhost:5000/api/logout \
-  -b "token=YOUR_JWT_COOKIE"
+curl http://localhost:5000/api/logout \
+  -b "token=YOUR_JWT_TOKEN"
 ```
 
----
+## 2. User Management
 
-## 6. User Management Endpoints
+All endpoints in this section require authentication.
 
 ### Get All Users
-- GET /user/get-users
-- Query parameters:
-  - `page`: number (optional, defaults to 1)
-  - `limit`: number (optional, defaults to 10)
 
-### Example Request
+- `GET /get-users?page=1&limit=10`
+
 ```bash
-curl -X GET "http://localhost:5000/api/user/get-users?page=1&limit=10" \
-  -b "token=YOUR_JWT_COOKIE"
+curl "http://localhost:5000/api/get-users?page=1&limit=10" \
+  -b "token=YOUR_JWT_TOKEN"
 ```
 
 ### Get Single User
-- GET /user/get-single-user/:id
 
-### Example Request
+- `GET /get-single-user/USER_ID`
+
 ```bash
-curl -X GET http://localhost:5000/api/user/get-single-user/USER_ID \
-  -b "token=YOUR_JWT_COOKIE"
+curl http://localhost:5000/api/get-single-user/USER_ID \
+  -b "token=YOUR_JWT_TOKEN"
 ```
 
-### Update User Status and Role
-- PATCH /user/update-user-status-and-role/:id
+### Update User Status or Role
 
-#### Request Body
-- role: string (optional, allowed values: `admin`, `manager`, `member`)
-- status: string (optional, allowed values: `active`, `blocked`)
+- `PATCH /update-user-status-and-role/USER_ID`
+- Required global role: `admin` or `manager`
+- Body fields: `role` (`admin`, `manager`, or `member`) and/or `status` (`active` or `blocked`)
 
-### Example Request
 ```bash
-curl -X PATCH http://localhost:5000/api/user/update-user-status-and-role/USER_ID \
+curl -X PATCH http://localhost:5000/api/update-user-status-and-role/USER_ID \
   -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -d '{
     "role": "manager",
     "status": "active"
-  }' \
-  -b "token=YOUR_JWT_COOKIE"
+  }'
 ```
 
 ### Delete User
-- DELETE /user/delete-user/:id
 
-### Example Request
+- `DELETE /delete-user/USER_ID`
+- Required global role: `admin`
+
 ```bash
-curl -X DELETE http://localhost:5000/api/user/delete-user/USER_ID \
-  -b "token=YOUR_JWT_COOKIE"
+curl -X DELETE http://localhost:5000/api/delete-user/USER_ID \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
----
-
-## 7. Workspace Endpoints
-
-All workspace endpoints require authentication. Send either the `token` cookie or an `Authorization: Bearer YOUR_JWT_TOKEN` header.
+## 3. Workspace Management
 
 ### Create Workspace
 
-- POST `/workspace/create`
-- Required user role: `admin` or `manager`
-- Content-Type: `application/json`
-
-#### Request Body Fields
-
-- `name`: string (required)
-- `description`: string (optional)
-
-#### Example Request
+- `POST /workspace/create`
+- Required global role: `admin` or `manager`
+- Body: `name` required, `description` optional
 
 ```bash
 curl -X POST http://localhost:5000/api/workspace/create \
@@ -271,80 +170,30 @@ curl -X POST http://localhost:5000/api/workspace/create \
   }'
 ```
 
-#### Success Response
-
-- Status: `200 OK`
-
-```json
-{
-  "success": true,
-  "workspace": {
-    "_id": "WORKSPACE_ID",
-    "name": "Product Development",
-    "description": "Workspace for the product team",
-    "owner": "USER_ID",
-    "status": "active"
-  }
-}
-```
-
 ### Get Workspaces
 
-- GET `/workspace/get`
-- Returns all workspaces for the authenticated user. An admin receives all workspaces.
-
-#### Example Request
+- `GET /workspace/get`
 
 ```bash
-curl -X GET http://localhost:5000/api/workspace/get \
-  -b "token=YOUR_JWT_COOKIE"
-```
-
-#### Success Response
-
-- Status: `200 OK`
-
-```json
-{
-  "success": true,
-  "workspace": [
-    {
-      "_id": "WORKSPACE_ID",
-      "name": "Product Development",
-      "description": "Workspace for the product team",
-      "owner": "USER_ID",
-      "status": "active"
-    }
-  ]
-}
+curl http://localhost:5000/api/workspace/get \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### Get Workspace by ID
 
-- GET `/workspace/by-id/:id`
-- `id`: workspace ObjectId (required)
-- The authenticated user must be an active workspace member, unless the user is an admin.
-
-#### Example Request
+- `GET /workspace/by-id/WORKSPACE_ID`
+- Requires membership in the workspace, unless the user is a global admin.
 
 ```bash
-curl -X GET http://localhost:5000/api/workspace/by-id/WORKSPACE_ID \
+curl http://localhost:5000/api/workspace/by-id/WORKSPACE_ID \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### Update Workspace
 
-- PATCH `/workspace/update/:id`
-- `id`: workspace ObjectId (required)
-- Required user role: `admin` or `manager`
-- Content-Type: `application/json`
-
-#### Request Body Fields
-
-- `name`: string (optional)
-- `description`: string (optional)
-
-#### Example Request
+- `PATCH /workspace/update/WORKSPACE_ID`
+- Required global role: `admin` or `manager`
+- Body fields: `name` and/or `description`
 
 ```bash
 curl -X PATCH http://localhost:5000/api/workspace/update/WORKSPACE_ID \
@@ -356,76 +205,22 @@ curl -X PATCH http://localhost:5000/api/workspace/update/WORKSPACE_ID \
   }'
 ```
 
-#### Success Response
-
-- Status: `201 Created`
-
-```json
-{
-  "success": true,
-  "updateWorkspace": {
-    "_id": "WORKSPACE_ID",
-    "name": "Updated Product Development",
-    "description": "Updated workspace description"
-  }
-}
-```
-
----
-
-## 8. Workspace Member Endpoints
-
-All workspace member endpoints require authentication. The `:id` parameter is the workspace ObjectId. Workspace access is checked before the controller runs, except that admins can access any workspace.
+## 4. Workspace Members
 
 ### Get Workspace Members
 
-- GET `/workspaces/:id/members`
-- Returns workspace-member records with populated user details. The current controller returns all workspace-member records after validating access to the requested workspace.
-
-#### Example Request
+- `GET /workspaces/WORKSPACE_ID/members`
 
 ```bash
-curl -X GET http://localhost:5000/api/workspaces/WORKSPACE_ID/members \
-  -b "token=YOUR_JWT_COOKIE"
-```
-
-#### Success Response
-
-- Status: `200 OK`
-
-```json
-{
-  "success": true,
-  "workspaceMembers": [
-    {
-      "_id": "MEMBERSHIP_ID",
-      "workspace": "WORKSPACE_ID",
-      "user": {
-        "_id": "USER_ID",
-        "name": "John Doe",
-        "email": "john@example.com"
-      },
-      "role": "member",
-      "status": "active",
-      "joinedAt": "2026-08-19T00:00:00.000Z",
-      "invitedBy": "INVITER_USER_ID"
-    }
-  ]
-}
+curl http://localhost:5000/api/workspaces/WORKSPACE_ID/members \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### Add Workspace Member
 
-- POST `/workspace/:id/add-members`
-- Required user role: global `admin`, or workspace `owner`/`manager`
-- Content-Type: `application/json`
-
-#### Request Body Fields
-
-- `userId`: string/ObjectId (required)
-- `role`: string (required, allowed values: `member`, `manager`)
-
-#### Example Request
+- `POST /workspace/WORKSPACE_ID/add-members`
+- Required role: global `admin`, or workspace `owner`/`manager`
+- Body: `userId` required and `role` (`member` or `manager`) required
 
 ```bash
 curl -X POST http://localhost:5000/api/workspace/WORKSPACE_ID/add-members \
@@ -437,68 +232,25 @@ curl -X POST http://localhost:5000/api/workspace/WORKSPACE_ID/add-members \
   }'
 ```
 
-#### Success Response
-
-- Status: `200 OK`
-
-```json
-{
-  "succes": true,
-  "member": {
-    "workspace": "WORKSPACE_ID",
-    "user": "USER_ID",
-    "role": "member",
-    "status": "active",
-    "invitedBy": "INVITER_USER_ID"
-  }
-}
-```
-
 ### Remove Workspace Member
 
-- DELETE `/workspace/:id/remove-member/:userId`
-- `userId`: user ObjectId (required)
-- Only the workspace owner or a global admin can remove a member. The workspace owner cannot be removed.
-
-#### Example Request
+- `DELETE /workspace/WORKSPACE_ID/remove-member/USER_ID`
+- Required role: global `admin` or workspace `owner`.
+- The workspace owner cannot be removed.
 
 ```bash
 curl -X DELETE http://localhost:5000/api/workspace/WORKSPACE_ID/remove-member/USER_ID \
-  -b "token=YOUR_JWT_COOKIE"
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
-#### Success Response
-
-- Status: `200 OK`
-
-```json
-{
-  "success": true,
-  "nessage": "user removed successfully"
-}
-```
-
----
-
-## 9. Task Endpoints
+## 5. Tasks
 
 ### Create Task
 
-- POST `/workspaces/:id/tasks`
-- `id`: workspace ObjectId (required)
-- Requires authentication and an active workspace membership. Global admins can access any workspace.
-- Required user role: global `admin`, or workspace `owner`/`manager`
-- Content-Type: `application/json`
-
-#### Request Body Fields
-
-- `title`: string (required)
-- `description`: string (optional)
-- `assignedTo`: user ObjectId (optional; the user must be an active member of the workspace)
-- `priority`: string (optional, allowed values: `low`, `medium`, `high`, `urgent`; defaults to `medium`)
-- `dueDate`: date string (optional)
-
-#### Example Request
+- `POST /workspaces/WORKSPACE_ID/tasks`
+- Required role: global `admin`, or workspace `owner`/`manager`
+- Body: `title` required; `description`, `assignedTo`, `priority`, and `dueDate` optional
+- `priority`: `low`, `medium`, `high`, or `urgent`
 
 ```bash
 curl -X POST http://localhost:5000/api/workspaces/WORKSPACE_ID/tasks \
@@ -512,33 +264,135 @@ curl -X POST http://localhost:5000/api/workspaces/WORKSPACE_ID/tasks \
     "dueDate": "2026-09-01"
   }'
 ```
- 
-#### Success Response
 
-- Status: `200 OK`
+### Get Workspace Tasks
 
-```json
-{
-  "success": true,
-  "task": {
-    "_id": "TASK_ID",
-    "title": "Prepare release notes",
-    "description": "Document the changes for the next release",
-    "workspace": "WORKSPACE_ID",
-    "createdBy": "USER_ID",
-    "assignedTo": "ASSIGNED_USER_ID",
-    "st atus": "todo",
-    "priority": "high",
-    "dueDate": "2026-09-01T00:00:00.000Z"
-  }
-}
+- `GET /workspace/WORKSPACE_ID/get-tasks`
+
+```bash
+curl http://localhost:5000/api/workspace/WORKSPACE_ID/get-tasks \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
----
+### Update Task Details
 
-## Workspace Error Status Codes
+- `PATCH /workspace/WORKSPACE_ID/tasks/TASK_ID`
+- Required role: global `admin`, or workspace `owner`/`manager`
+- Body fields: `title`, `description`, `priority`, `dueDate`, and/or `assignedTo`
 
-Errors use this response format:
+```bash
+curl -X PATCH http://localhost:5000/api/workspace/WORKSPACE_ID/tasks/TASK_ID \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "title": "Finalize release notes",
+    "priority": "urgent"
+  }'
+```
+
+### Update Task Status
+
+- `PATCH /workspace/WORKSPACE_ID/tasks/TASK_ID/status`
+- Body: `status` must be `todo`, `in-progress`, or `completed`
+- Allowed for global admins, workspace owners/managers, or the assigned user.
+
+```bash
+curl -X PATCH http://localhost:5000/api/workspace/WORKSPACE_ID/tasks/TASK_ID/status \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "status": "completed"
+  }'
+```
+
+### Delete Task
+
+- `DELETE /workspace/WORKSPACE_ID/tasks/TASK_ID`
+- Required role: global `admin`, or workspace `owner`/`manager`
+
+```bash
+curl -X DELETE http://localhost:5000/api/workspace/WORKSPACE_ID/tasks/TASK_ID \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+## 6. Comments
+
+### Create Comment
+
+- `POST /workspace/WORKSPACE_ID/tasks/TASK_ID/comments`
+- Body: `content` required
+
+```bash
+curl -X POST http://localhost:5000/api/workspace/WORKSPACE_ID/tasks/TASK_ID/comments \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "content": "The release notes are ready for review."
+  }'
+```
+
+### Get Task Comments
+
+- `GET /workspace/WORKSPACE_ID/tasks/TASK_ID/comments`
+
+```bash
+curl http://localhost:5000/api/workspace/WORKSPACE_ID/tasks/TASK_ID/comments \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+## 7. Dashboards
+
+### Get Admin Dashboard
+
+- `GET /admin/dashboard`
+- Required global role: `admin`
+
+```bash
+curl http://localhost:5000/api/admin/dashboard \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+### Get Workspace Dashboard
+
+- `GET /workspace/WORKSPACE_ID/dashboard`
+
+```bash
+curl http://localhost:5000/api/workspace/WORKSPACE_ID/dashboard \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+## 8. Notifications
+
+### Get Notifications
+
+- `GET /notifications`
+
+```bash
+curl http://localhost:5000/api/notifications \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+### Mark Notification as Read
+
+- `PATCH /notification/NOTIFICATION_ID/read`
+
+```bash
+curl -X PATCH http://localhost:5000/api/notification/NOTIFICATION_ID/read \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+### Mark All Notifications as Read
+
+- `PATCH /notification/read-all`
+
+```bash
+curl -X PATCH http://localhost:5000/api/notification/read-all \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
+## 9. Common Errors
+
+Errors use this response shape:
 
 ```json
 {
@@ -548,18 +402,18 @@ Errors use this response format:
 }
 ```
 
-Common workspace and workspace-member errors:
-
-| Status | Meaning | Examples |
-|---|---|---|
-| `400 Bad Request` | Invalid request or workspace access denied | Invalid member role; user is not allowed to access the workspace; a non-owner attempts removal; owner cannot be removed |
-| `401 Unauthorized` | Authentication is missing | No `token` cookie or bearer token |
-| `403 Forbidden` | Authenticated user role is not allowed | A `member` attempts to create/update a workspace |
-| `404 Not Found` | Workspace or member does not exist | Workspace not found; workspace member not found |
-| `409 Conflict` | Request conflicts with existing data | User is invalid; user is already a member of the workspace |
-| `500 Internal Server Error` | Unexpected server or database error | Unhandled backend error |
+| Status | Meaning |
+|---|---|
+| `400 Bad Request` | Invalid input or workspace access denied |
+| `401 Unauthorized` | Authentication is missing or invalid |
+| `403 Forbidden` | Authenticated user role is not allowed |
+| `404 Not Found` | Resource does not exist |
+| `409 Conflict` | Request conflicts with existing data |
+| `500 Internal Server Error` | Unexpected server or database error |
 
 ## Notes
-- The registration endpoint stores a JWT token in a cookie after successful registration.
-- OTP expiration is set for 5 minutes.
-- The user model supports profile picture upload through Cloudinary.
+
+- The registration and login endpoints set the JWT in the `token` cookie.
+- OTP expiration is 5 minutes.
+- Profile images are uploaded to Cloudinary.
+- The health check is available at `GET http://localhost:5000/health`.
