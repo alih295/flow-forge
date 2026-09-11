@@ -1,4 +1,49 @@
-# FlowForge Backend API Documentation
+# FlowForge Backend API
+
+FlowForge is a workspace-based task management API built with Express,
+MongoDB, JWT authentication, Socket.IO, Cloudinary, and Nodemailer.
+
+## Quick Start
+
+### Requirements
+
+- Node.js 18 or later
+- MongoDB instance
+- Cloudinary account (required when registering with a profile image)
+- Gmail SMTP credentials or an equivalent Nodemailer configuration
+
+### Install and Run
+
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+The development server listens on `http://localhost:5000` unless `PORT` is
+set. There is currently no automated test script in `package.json`.
+
+### Environment Variables
+
+Create `backend/.env`:
+
+```env
+PORT=5000
+MONGO_URI=mongodb://127.0.0.1:27017/flowforge
+JWT_SECRET=replace-with-a-long-random-secret
+
+CLOUDINARY_API_NAME=your-cloudinary-cloud-name
+CLOUDINARY_API_KEY=your-cloudinary-api-key
+CLOUDINARY_API_SECRET=your-cloudinary-api-secret
+
+EMAIL_USER=your-email@example.com
+EMAIL_PASS=your-email-app-password
+```
+
+`EMAIL_PASS` should be an email provider app password where required. Never
+commit `.env` or expose these values in the frontend.
+
+## API Basics
 
 Base URL:
 
@@ -6,9 +51,42 @@ Base URL:
 http://localhost:5000/api
 ```
 
-Protected endpoints accept either the `token` cookie or an
-`Authorization: Bearer YOUR_JWT_TOKEN` header. Replace placeholder values such
-as `WORKSPACE_ID`, `TASK_ID`, `USER_ID`, and `NOTIFICATION_ID` with real IDs.
+Protected HTTP endpoints accept either the `token` cookie or an
+`Authorization: Bearer YOUR_JWT_TOKEN` header. Login and registration set the
+cookie automatically. For a browser frontend using cookie authentication,
+send requests with credentials enabled (`credentials: "include"`).
+
+Replace placeholder values such as `WORKSPACE_ID`, `TASK_ID`, `USER_ID`,
+`COMMENT_ID`, and `NOTIFICATION_ID` with real MongoDB IDs.
+
+### Roles
+
+Global roles are `admin`, `manager`, and `member`. Workspace roles are
+`owner`, `manager`, and `member`. A global admin can access workspace-scoped
+resources without a workspace membership record.
+
+### Standard Error Response
+
+Most controller errors use this response shape:
+
+```json
+{
+  "success": false,
+  "status": 400,
+  "message": "Error message"
+}
+```
+
+Validation errors use an `errors` array instead of `message`:
+
+```json
+{
+  "success": false,
+  "errors": [
+    { "field": "email", "message": "valid email is required" }
+  ]
+}
+```
 
 ## 1. Authentication
 
@@ -38,6 +116,7 @@ curl -X POST http://localhost:5000/api/user/register \
 
 - `POST /verify-otp`
 - Content-Type: `application/json`
+- The OTP expires after 5 minutes.
 
 #### Request Body
 
@@ -111,6 +190,7 @@ All endpoints in this section require authentication.
 ### Get All Users
 
 - `GET /get-users?page=1&limit=10`
+- `page` and `limit` are optional; defaults are `1` and `10`.
 
 ```bash
 curl "http://localhost:5000/api/get-users?page=1&limit=10" \
@@ -219,7 +299,8 @@ curl http://localhost:5000/api/workspaces/WORKSPACE_ID/members \
 ### Add Workspace Member
 
 - `POST /workspace/WORKSPACE_ID/add-members`
-- Required role: global `admin`, or workspace `owner`/`manager`
+- Required role: global `admin` or `manager` at the route level. The
+  controller also supports workspace `owner`/`manager` membership.
 - Body: `userId` required and `role` (`member` or `manager`) required
 
 ```bash
@@ -273,6 +354,9 @@ curl -X POST http://localhost:5000/api/workspaces/WORKSPACE_ID/tasks \
 curl http://localhost:5000/api/workspace/WORKSPACE_ID/get-tasks \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
+
+The response includes `tasks`, with populated `assignedTo` and `createdBy`
+user name and email fields.
 
 ### Update Task Details
 
@@ -340,6 +424,33 @@ curl http://localhost:5000/api/workspace/WORKSPACE_ID/tasks/TASK_ID/comments \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
+### Update Comment
+
+- `PATCH /workspace/WORKSPACE_ID/tasks/TASK_ID/comment/COMMENT_ID`
+- Requires authentication and workspace access.
+- Only the comment author or a global admin can update it.
+- Body: `content` required.
+
+```bash
+curl -X PATCH http://localhost:5000/api/workspace/WORKSPACE_ID/tasks/TASK_ID/comment/COMMENT_ID \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{
+    "content": "Updated review comment."
+  }'
+```
+
+### Delete Comment
+
+- `DELETE /workspace/WORKSPACE_ID/tasks/TASK_ID/comment/COMMENT_ID`
+- Only the comment author, a workspace owner/manager, or a global admin can
+  delete it.
+
+```bash
+curl -X DELETE http://localhost:5000/api/workspace/WORKSPACE_ID/tasks/TASK_ID/comment/COMMENT_ID \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
+
 ## 7. Dashboards
 
 ### Get Admin Dashboard
@@ -390,17 +501,58 @@ curl -X PATCH http://localhost:5000/api/notification/read-all \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
-## 9. Common Errors
+## 10. Health Check
 
-Errors use this response shape:
+This endpoint is outside the `/api` prefix and does not require
+authentication:
 
-```json
-{
-  "success": false,
-  "status": 400,
-  "message": "Error message"
-}
+```http
+GET http://localhost:5000/health
 ```
+
+Successful response:
+
+```text
+good
+```
+
+## 11. Realtime Notifications
+
+The backend exposes Socket.IO on the same origin as the HTTP server. The
+connection must include a JWT in the `auth.token`, `token` header, or query
+parameter.
+
+```js
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:5000", {
+  auth: { token: YOUR_JWT_TOKEN },
+});
+
+socket.on("connect", () => {
+  console.log("Connected", socket.id);
+});
+```
+
+Authenticated clients join a user-specific room. The server is intended to
+emit notification events as `new notification`; clients should handle that
+event and refresh notification state when received.
+
+## 12. Frontend Integration Checklist
+
+- Use the `/api` base URL for all REST requests and `/health` only for health
+  checks.
+- Send `Authorization: Bearer <token>` when storing the token in application
+  state, or use cookie credentials when relying on the `token` cookie.
+- Use `multipart/form-data` for registration when uploading `image`; only
+  image MIME types are accepted.
+- Verify the email OTP before attempting login.
+- Store IDs returned by workspace, task, comment, and notification responses
+  for subsequent route parameters.
+- Treat `401` as an authentication failure and `403` as an authorization
+  failure; display validation `errors` field-by-field for `400` responses.
+
+## 13. Common HTTP Statuses
 
 | Status | Meaning |
 |---|---|
@@ -414,6 +566,8 @@ Errors use this response shape:
 ## Notes
 
 - The registration and login endpoints set the JWT in the `token` cookie.
-- OTP expiration is 5 minutes.
-- Profile images are uploaded to Cloudinary.
-- The health check is available at `GET http://localhost:5000/health`.
+- Profile images are uploaded to Cloudinary under the `user_profiles` folder.
+- Multer keeps uploaded images in memory before sending them to Cloudinary.
+- Activity logs and notifications are created by several workspace actions.
+- CORS is configured for Socket.IO with a wildcard origin; configure a
+  restricted origin before deploying to production.
