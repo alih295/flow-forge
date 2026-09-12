@@ -1,11 +1,12 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import Landing from '../pages/Landing'
 
 function AppRoutes() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<div>Home Page</div>} />
+        <Route path="/" element=<Landing/> />
       </Routes>
     </Router>
   )
