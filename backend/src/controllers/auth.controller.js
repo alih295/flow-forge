@@ -34,13 +34,15 @@ const registerUser = async (req, res, next) => {
     const token = user.generateToken();
     res.cookie("token", token);
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS, // Your 16-character App Password
-      },
-    });
+   const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // uses STARTTLS on port 587
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS, // Your 16-character App Password
+  },
+});
 
     const mailOptions = {
       from: `"Flow Forge" <${process.env.EMAIL_USER}>`,
