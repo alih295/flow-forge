@@ -6,7 +6,6 @@ const http = require("http");
 const app = require("./src/app");
 const connectToDb = require("./src/config/dbConnection");
 const port = process.env.PORT;
-const { Server } = require("socket.io");
 const socketAuth = require("./src/middleware/socket.auth.middleware");
 const { initSocket } = require("./src/socket/socket");
 

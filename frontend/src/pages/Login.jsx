@@ -1,19 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 function Login() {
+  const [fullName, setFullName] = useState('')
+  const [enail, setenail] = useState('')
+  const [password, setpassword] = useState('')
+  const [image, setimage] = useState('')
+
+  const handleSubmit = (e)=>{
+    e.preventDefault()
+  }
+
+
+
+
+
   return (
     <section className="w-full flex items-center justify-center flex-col h-screen bg-(--bg-primary)">
       <h1 className="text-3xl font-bold text-(--text-primary) ">Login</h1>
 
-      <form className="w-1/3 border flex flex-col gap-5  rounded-xl  p-5  mt-5 border-(--border-acent)">
+      <form onSubmit={handleSubmit()} className="w-1/3 border flex flex-col gap-5  rounded-xl  p-5  mt-5 border-(--border-acent)">
         
         <div>
           <label> Enter Email </label>
           <input
             required placeholder="Enter Email "
             type="email"
-            className="w-full text-lg outline-none mt-2 border px-4 py-2 border-(--border-acent) rounded "
+            className="w-full text-lg outline-none mt-2 border px-4 py-2 border-(--border-acent) rounded-xl focus:border-(--color-flow-cyan) "
           />
         </div>
         <div>
@@ -21,15 +34,15 @@ function Login() {
           <input
             required
             type="password" placeholder="Enter Password"
-            className="w-full text-lg mt-2 outline-none border px-4 py-2 border-(--border-acent) rounded "
+            className="w-full text-lg mt-2 focus:border-(--color-flow-cyan) outline-none border px-4 py-2 border-(--border-acent) rounded-xl "
           />
         </div>
        
-        <p>Don't have an Acount |  <Link className="text-(--text-primary) font-bold" to={'/signup'}>Signup</Link></p>
+        <p>Don't have an Acount |  <Link className="text-(--text-primary) font-bold" to={'/signup'}>Sign-up</Link></p>
 
         <button
           className="w-full
-        py-2 bg-(--btn-primary-bg) rounded text-(--btn-primary-text) font-semibold text-lg cursor-pointer hover:bg-(--btn-primary-hover) "
+        py-2 bg-(--btn-primary-bg) rounded-xl text-(--btn-primary-text) font-semibold text-lg cursor-pointer hover:bg-(--btn-primary-hover) "
         >
           Login
         </button>
