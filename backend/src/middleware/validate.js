@@ -6,11 +6,16 @@ const validationRequest = (req, res, next) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({
       success: false,
-      errors: errors.array().map((err)=>({field:err.path , message:err.msg})),
+      status: 400,
+      message: errors.array()[0].msg,
+      errors: errors.array().map((err) => ({
+        field: err.path,
+        message: err.msg,
+      })),
     });
   }
 
-  next()
+  next();
 };
 
-module.exports = validationRequest
+module.exports = validationRequest;
