@@ -42,7 +42,7 @@ function Signup() {
   }
 };
   return (
-    <section className="w-full flex items-center justify-center flex-col h-screen bg-(--bg-primary)">
+    <section className="w-full font-[montserat] flex items-center justify-center flex-col h-screen bg-(--bg-primary)">
       <h1 className="text-3xl font-bold text-(--text-primary) ">Register</h1>
 
       <form

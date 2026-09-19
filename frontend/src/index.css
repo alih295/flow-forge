@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@font-face {
+  font-family:montserat ;
+  src: url(../public//fonts//Montserrat-VariableFont_wght.ttf);
+}
 
 :root {
   

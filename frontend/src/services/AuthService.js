@@ -4,13 +4,12 @@ export const registerUser = async (formData) => {
   try {
     const response = await api.post("/user/register", formData, {
       headers: {
-        "Content-Type": "multipart/form-data", 
+        "Content-Type": "multipart/form-data",
       },
     });
 
     return response.data;
   } catch (err) {
-  
     const errorMessage =
       err.response?.data?.message || err.message || "Something went wrong";
     console.error("API Register Error:", errorMessage);
@@ -30,5 +29,17 @@ export const loginUser = async (userData) => {
     console.error("API login error:", error);
 
     throw new Error(error);
+  }
+};
+
+export const getUserProfile = async (token) => {
+  try {
+    const response = await api.get('/user/profile')
+    const data = response.data
+    return data
+  } catch (err) {
+    const error = err.response.data.message||err.message || 'something went wrong'
+    console.error('get user api error' , error)
+    throw new Error(error)
   }
 };

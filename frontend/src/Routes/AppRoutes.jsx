@@ -5,6 +5,7 @@ import Signup from "../pages/Signup";
 import Login from "../pages/Login";
 import Home from "../pages/Home";
 import OtpVerification from "../pages/OtpVerification";
+import AdminProtectedRoute from "../ProtectedRoutes/AdminProtectedRoute";
 
 function AppRoutes() {
   return (
@@ -14,7 +15,8 @@ function AppRoutes() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />}></Route>
         <Route path="verify-otp"  element={<OtpVerification/>}  />
-        <Route path="/home" element={<Home />}></Route>
+
+        <Route path="/home" element={<AdminProtectedRoute><Home /></AdminProtectedRoute>  }></Route>
       </Routes>
     </Router>
   );

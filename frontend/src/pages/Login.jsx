@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../services/AuthService";
 import toast, { Toaster } from "react-hot-toast";
 import Loader from "../components/Loader";
@@ -8,6 +8,7 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setpassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,10 +19,10 @@ function Login() {
         password: password,
       };
       const data = await loginUser(userData);
-      toast.success('login successfully')
+      toast.success("login successfully");
       setEmail("");
       setpassword("");
-      console.log(data);
+      navigate("/home");
     } catch (err) {
       console.error(err.message);
       toast.error(err.message);
@@ -31,7 +32,7 @@ function Login() {
   };
 
   return (
-    <section className="w-full flex items-center justify-center flex-col h-screen bg-(--bg-primary)">
+    <section className="w-full font-[montserat] flex items-center justify-center flex-col h-screen bg-(--bg-primary)">
       <div>
         <Toaster></Toaster>
       </div>
