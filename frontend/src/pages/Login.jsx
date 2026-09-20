@@ -1,14 +1,17 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../services/AuthService";
 import toast, { Toaster } from "react-hot-toast";
 import Loader from "../components/Loader";
+import { UserContext } from "../Context/AppContext";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setpassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const { user, setUser } = useContext(UserContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,10 +22,25 @@ function Login() {
         password: password,
       };
       const data = await loginUser(userData);
-      toast.success("login successfully");
-      setEmail("");
-      setpassword("");
-      navigate("/home");
+      console.log(data.user.role)
+      if (data?.user) {
+        toast.success("Login successfully");
+        setUser(data.user);
+
+        setEmail("");
+        setpassword("");
+
+        const userRole = data.user.role;
+        if (userRole === "admin") {
+          navigate("/admin/dashboard", { replace: true });
+        } else if (userRole === "manager") {
+          navigate("/manager/dashboard", { replace: true });
+        } else {
+          navigate("/user/dashboard", { replace: true });
+        }
+      } else {
+        toast.error("Invalid response from server");
+      }
     } catch (err) {
       console.error(err.message);
       toast.error(err.message);

@@ -4,7 +4,7 @@ import { UserContext } from "../Context/AppContext";
 import { Navigate } from "react-router-dom";
 import Loader from "../components/Loader";
 
-function AdminProtectedRoute({ children }) {
+function ManagerProtectedRoute({ children }) {
   const { user, setUser, loading, setLoading } = useContext(UserContext);
 
   useEffect(() => {
@@ -33,11 +33,11 @@ function AdminProtectedRoute({ children }) {
     return <Loader />;
   }
 
-  if (!user || user.role !== "admin") {
+  if (!user || user.role !== "manager") {
     return <Navigate to="/login" replace />;
   }
 
   return children;
 }
 
-export default AdminProtectedRoute;
+export default ManagerProtectedRoute;
