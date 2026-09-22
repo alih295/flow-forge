@@ -1,0 +1,28 @@
+
+body{
+    background-color: var(--bg-secondary);
+    font-family: var();
+}
+
+.primary-btn{
+    background-color: var(--btn-primary-bg);
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    color: var(--btn-primary-text);
+}
+
+.primary-btn:hover{
+    background-color: var(--btn-primary-hover);
+    transform: scale(1.02);
+    
+}
+.secondary-btn{
+    background-color: var(--btn-secondary-bg);
+    transition: all 1s ease-in-out;
+}
+.secondary-btn:hover{
+    background-color: var(--btn-secondary-hover);
+    transform: scale(1.02);
+
+
+}
