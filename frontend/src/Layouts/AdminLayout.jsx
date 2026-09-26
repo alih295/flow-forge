@@ -7,21 +7,68 @@ import Aside from "../components/Aside";
 function AdminLayout() {
   const { user } = useContext(UserContext);
   const nav = [
-    { id: 1, name: "dashboard", link: "/admin/dashboard" },
     {
-      id: 2,
-      name: "workspace",
-      link: "/admin/workspace",
+      section: "Overview",
+      items: [
+        {
+          id: 1,
+          name: "Dashboard",
+          link: "/admin/dashboard",
+        },
+      ],
     },
-    { id: 3, name: "tasks", link: "/admin/tasks" },
+    {
+      section: "Management",
+      items: [
+        {
+          id: 2,
+          name: "Users",
+          link: "/admin/users",
+        },
+        {
+          id: 3,
+          name: "Workspaces",
+          link: "/admin/workspaces",
+        },
+        {
+          id: 4,
+          name: "Tasks",
+          link: "/admin/tasks",
+        },
+      ],
+    },
+    {
+      section: "System",
+      items: [
+        {
+          id: 5,
+          name: "Notifications",
+          link: "/admin/notifications",
+        },
+        {
+          id: 6,
+          name: "Activity Logs",
+          link: "/admin/activity",
+        },
+      ],
+    },
+    {
+      section: "Settings",
+      items: [
+        {
+          id: 7,
+          name: "Settings",
+          link: "/admin/settings",
+        },
+      ],
+    },
   ];
-    const location  = useLocation()
-    
+
   return (
-    <main className="w-full relative h-screen   font-[montserat]">
+    <main className="w-full relative h-screen   font-Montseerat">
       <Header user={user} />
       <div className="w-full flex items-center justify-between  h-[calc(100%-80px)]">
-        <Aside data={nav}/>
+        <Aside data={nav} />
 
         <div className="w-[80%] h-full overflow-x-auto ">
           <Outlet />

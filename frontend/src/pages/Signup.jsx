@@ -42,12 +42,12 @@ function Signup() {
   }
 };
   return (
-    <section className="w-full font-[montserat] flex items-center justify-center flex-col h-screen bg-(--bg-primary)">
-      <h1 className="text-3xl font-bold text-(--text-primary) ">Register</h1>
+    <section className="w-full font-Montserrat flex items-center justify-center flex-col h-screen bg-bg-soft">
+      <h1 className="text-3xl font-bold text-text ">Register</h1>
 
       <form
         onSubmit={handleSubmit}
-        className="w-1/3 border flex flex-col gap-5  rounded-xl  p-5  mt-5 border-(--border-acent)"
+        className="w-1/3 border flex flex-col gap-5  rounded-xl  p-5  mt-5 border-border"
       >
         <div>
           <label> Enter Full Name</label>
@@ -59,7 +59,7 @@ function Signup() {
             required
             type="text"
             placeholder="Enter Full Name"
-            className="w-full focus:border-(--color-flow-cyan) outline-none text-lg mt-2 border px-4 py-2 border-(--border-acent) rounded-xl "
+            className="w-full  outline-none text-lg mt-2 border px-4 py-2 border-border rounded-xl "
           />
         </div>
         <div>
@@ -72,7 +72,7 @@ function Signup() {
             required
             placeholder="Enter Email "
             type="email"
-            className="w-full focus:border-(--color-flow-cyan) text-lg outline-none mt-2 border px-4 py-2 border-(--border-acent) rounded-xl "
+            className="w-full text-lg outline-none mt-2 border px-4 py-2 border-border rounded-xl "
           />
         </div>
         <div>
@@ -85,12 +85,12 @@ function Signup() {
             required
             type="password"
             placeholder="Enter Password"
-            className="w-full focus:border-(--color-flow-cyan) text-lg mt-2 outline-none border px-4 py-2 border-(--border-acent) rounded-xl "
+            className="w-full  text-lg mt-2 outline-none border px-4 py-2 border-border rounded-xl "
           />
         </div>
         <div
           className="w-full relative flex
-         items-center justify-center cursor-pointer  h-20 border border-dashed border-(--border-acent) rounded-xl "
+         items-center justify-center cursor-pointer  h-20 border border-dashed border-text rounded-xl "
         >
           <p>
             {`${image ? image.name : "Browse & Drag or drop your file here (optional)"}`}
@@ -105,14 +105,14 @@ function Signup() {
         </div>
         <p>
           Already have an Acount |{" "}
-          <Link className="text-(--text-primary) font-bold" to={"/login"}>
+          <Link className="text-text font-bold" to={"/login"}>
             Login
           </Link>
         </p>
 
         <button
           className="w-full
-        py-2 bg-(--btn-primary-bg) rounded-xl text-(--btn-primary-text) font-semibold text-lg cursor-pointer hover:bg-(--btn-primary-hover) "
+        py-2 bg-accent rounded-xl text-white font-semibold text-lg cursor-pointer hover:opacity-100 opacity-90 "
         >
           {loading ? <Loader /> : 'Register'}
          

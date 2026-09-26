@@ -1,35 +1,35 @@
 @import "tailwindcss";
+
 @font-face {
-  font-family:montserat ;
-  src: url(../public//fonts//Montserrat-VariableFont_wght.ttf);
+  font-family: "Montserrat";
+  src: url("../public/fonts/Montserrat-VariableFont_wght.ttf");
 }
 
 :root {
-  
-  --bg-primary: #ffffff;
-  --bg-secondary: #f4f7f9;
-  
-  /* Text Colors */
-  --text-primary: #003b64;
-  --text-secondary: #5a6e7f;
-  --text-light: #ffffff;
-  
-  /* Brand / Logo Colors */
-  --color-flow-cyan: #1db9de;
-  --color-forge-orange: #ff7a00;
-  --color-anvil-blue: #004e89;
-  
-  /* Button Colors */
-  --btn-primary-bg: #ff7a00;
-  --btn-primary-text: #ffffff;
-  --btn-primary-hover: #e06c00;
-  
-  --btn-secondary-bg: #004e89;
-  --btn-secondary-text: #ffffff;
-  --btn-secondary-hover: #003761;
-  
-  /* Border & Accent */
-  --border-color: #d1dbe3;
-  --accent-color: #1db9de;
+  --bg: #ffffff;
+  --bg-soft: #f4f7f9;
+
+  --text: #003b64;
+  --text-muted: #5a6e7f;
+
+  --primary: #1db9de;
+  --accent: #ff7a00;
+  --dark: #004e89;
+
+  --border: #d1dbe3;
+  --white: #ffffff;
 }
 
+@theme {
+  --color-bg: var(--bg);
+  --color-bg-soft: var(--bg-soft);
+
+  --color-text: var(--text);
+  --color-muted: var(--text-muted);
+
+  --color-primary: var(--primary);
+  --color-accent: var(--accent);
+  --color-dark: var(--dark);
+
+  --color-border: var(--border);
+}

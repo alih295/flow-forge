@@ -30,7 +30,11 @@ function AdminProtectedRoute({ children }) {
 
   // 1. Show loader while authenticating
   if (loading) {
-    return <Loader />;
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        <Loader />
+      </div>
+    );
   }
 
   if (!user || user.role !== "admin") {

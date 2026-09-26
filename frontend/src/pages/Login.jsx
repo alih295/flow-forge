@@ -50,15 +50,15 @@ function Login() {
   };
 
   return (
-    <section className="w-full font-[montserat] flex items-center justify-center flex-col h-screen bg-(--bg-primary)">
+    <section className="w-full font-[Montserrat] flex items-center justify-center flex-col h-screen bg-(--bg-soft)">
       <div>
         <Toaster></Toaster>
       </div>
-      <h1 className="text-3xl font-bold text-(--text-primary) ">Login</h1>
+      <h1 className="text-3xl font-bold text-text ">Login</h1>
 
       <form
         onSubmit={handleSubmit}
-        className="w-1/3 border flex flex-col gap-5  rounded-xl  p-5  mt-5 border-(--border-acent)"
+        className="w-1/3 border flex flex-col gap-5  rounded-xl  p-5  mt-5 border-border"
       >
         <div>
           <label> Enter Email </label>
@@ -70,7 +70,7 @@ function Login() {
             required
             placeholder="Enter Email "
             type="email"
-            className="w-full text-lg outline-none mt-2 border px-4 py-2 border-(--border-acent) rounded-xl focus:border-(--color-flow-cyan) "
+            className="w-full text-lg outline-none mt-2 border px-4 py-2 border-border rounded-xl  "
           />
         </div>
         <div>
@@ -83,20 +83,20 @@ function Login() {
             }}
             type="password"
             placeholder="Enter Password"
-            className="w-full text-lg mt-2 focus:border-(--color-flow-cyan) outline-none border px-4 py-2 border-(--border-acent) rounded-xl "
+            className="w-full text-lg mt-2  outline-none border px-4 py-2 border-border rounded-xl "
           />
         </div>
 
         <p>
           Don't have an Acount |{" "}
-          <Link className="text-(--text-primary) font-bold" to={"/signup"}>
+          <Link className="text-text font-bold" to={"/signup"}>
             Sign-up
           </Link>
         </p>
 
         <button
           className="w-full
-        py-2 bg-(--btn-primary-bg) rounded-xl text-(--btn-primary-text) font-semibold text-lg cursor-pointer hover:bg-(--btn-primary-hover) "
+        py-2 bg-accent  rounded-xl text-white font-semibold text-lg cursor-pointer opacity-90 hover:opacity-100 "
         >
           {loading ? <Loader /> : "login"}
         </button>
