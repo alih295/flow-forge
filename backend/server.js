@@ -9,16 +9,12 @@ const port = process.env.PORT;
 const socketAuth = require("./src/middleware/socket.auth.middleware");
 const { initSocket } = require("./src/socket/socket");
 
-const server = http.createServer(app)
-const io = initSocket(server)
+const server = http.createServer(app);
+const io = initSocket(server);
 io.use(socketAuth);
-
-
-
-
-
+ 
 io.on("connection", (socket) => {
-  console.log("user is conenected", socket.user._id );
+  console.log("user is conenected", socket.user._id);
   const userRoom = `user_${socket.user._id}`;
   socket.join(userRoom);
   console.log(`user joined room ${userRoom}`);
