@@ -25,7 +25,7 @@ function MocHeader() {
         </ul>
       </nav>
       <div>
-        <Link to={'/login'} className="px-6 py-2 bg-(--btn-primary-bg) rounded text-(--btn-primary-text) text-lg hover:bg-(--btn-primary-hover)  cursor-pointer ">
+        <Link to={'/login'} className="px-6 py-2  rounded-lg shadow  text-white font-semibold  bg-accent   text-lg   cursor-pointer ">
           Sign In
         </Link>
       </div>

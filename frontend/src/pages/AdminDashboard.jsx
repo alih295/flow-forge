@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { adminDashboard } from "../services/AdminServices";
 import toast from "react-hot-toast";
 import { Users, FolderKanban, ShieldCheck, ArrowUpRight } from "lucide-react";
+import TaskChart from "../components/TaskChart";
 
 function AdminDashboard() {
   const [loading, setLoading] = useState(true);
@@ -88,11 +89,11 @@ function AdminDashboard() {
           </div>
         </div>
       </div>
-      <div className="w-full h-100 flex items-center justify-between">
+      <div className="w-full h-80 flex items-center justify-between">
         <div className="w-[59%] h-full  p-5 bg-white border border-border  rounded-lg">
           <h1 className="text-xl font-semibold text-text">Task Overview</h1>
-          <div className="w-full h-[70%] mt-5  bg-red-600">
-            <div className="w-5  bg-bg-soft "></div>
+          <div className="w-full h-[70%] mt-5  ">
+            <TaskChart/>
             
           </div>
         </div>
