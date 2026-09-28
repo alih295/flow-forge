@@ -16,19 +16,19 @@ function TaskChart({ taskData }) {
       label: "Todo",
       count: data.todo,
       barColor: "bg-primary",
-      bgColor: "bg-white",
+      bgColor: "bg-bg-soft",
     },
     {
       label: "In Progress",
       count: data.inProgress,
       barColor: "bg-accent",
-      bgColor: "bg-white",
+      bgColor: "bg-bg-soft",
     },
     {
       label: "Completed",
       count: data.completed,
       barColor: "bg-dark",
-      bgColor: "bg-white",
+      bgColor: "bg-bg-soft",
     },
   ];
 

@@ -6,12 +6,13 @@ import Signup from "../pages/Signup";
 import Login from "../pages/Login";
 import OtpVerification from "../pages/OtpVerification";
 import AdminProtectedRoute from "../ProtectedRoutes/AdminProtectedRoute";
-import AdminDashboard from "../pages/AdminDashboard";
+import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminLayout from "../Layouts/AdminLayout";
 import ManagerLayout from "../Layouts/ManagerLayout";
 import ManagerProtectedRoute from "../ProtectedRoutes/ManagerProtectedRote";
 import UserProtectedRoute from "../ProtectedRoutes/UserProtectedRoute";
 import UserLayout from "../Layouts/UserLayout";
+import UsersManagement from "../pages/admin/UsersManagement";
 
 function AppRoutes() {
   return (
@@ -32,6 +33,7 @@ function AppRoutes() {
         >
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="users" element={<UsersManagement />} />
         </Route>
 
         {/* manager Routes aare called here */}

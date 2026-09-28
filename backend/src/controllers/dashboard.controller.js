@@ -9,6 +9,8 @@ const getDashboardData = async (req, res, next) => {
 
     const totalUsers = await userModel.countDocuments();
 
+    const recentUser = await userModel.find().select("name role email status").sort({createdAt:-1}).limit(10) 
+
     const totalTasks = await taskModel.countDocuments();
 
     const activeUsers = await userModel.countDocuments({
@@ -19,6 +21,10 @@ const getDashboardData = async (req, res, next) => {
       status: "completed",
     });
 
+    const todoTask = await taskModel.countDocuments({status:'todo'})
+
+    const inprogressTask = await taskModel.countDocuments({status:'in-progress'})
+
     return res.status(200).json({
       success: true,
       dashboard: {
@@ -27,6 +33,9 @@ const getDashboardData = async (req, res, next) => {
         totalTasks,
         activeUsers,
         completedTasks,
+        recentUser,
+        todoTask,
+        inprogressTask
       },
     });
   } catch (err) {
