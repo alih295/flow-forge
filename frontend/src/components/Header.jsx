@@ -1,9 +1,20 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Bell } from "lucide-react";
 import NotificationDrawer from "./NotificationDrawer";
+import { NotificationContext } from "../Context/NotificationContext";
 
 function Header({ user }) {
   const [showNotification, setShowNotification] = useState(false);
+   const { notificationData, fetchNotification, notificationloading } =
+      useContext(NotificationContext);
+  useEffect(() => {
+    fetchNotification()
+  }, [])
+  
+
+
+
+
   return (
     <header
       className="w-full h-20 
@@ -20,7 +31,7 @@ function Header({ user }) {
         <div className="w-15 cursor-pointer text-xl flex items-center justify-center  rounded-full h-15 ">
           <Bell onClick={() => setShowNotification(true)} />
 
-          <NotificationDrawer
+          <NotificationDrawer notificationData={notificationData}
             isOpen={showNotification}
             onClose={() => setShowNotification(false)}
           />

@@ -3,16 +3,18 @@ import { adminDashboard } from "../../services/AdminServices";
 import toast from "react-hot-toast";
 import Loader from "../../components/Loader";
 import TaskChart from "../../components/TaskChart";
-import  {AdminDashboardContext}  from "../../Context/AdminDashboardContext";
+import { AdminDashboardContext } from "../../Context/AdminDashboardContext";
+import { NotificationContext } from "../../Context/NotificationContext";
 
 function AdminDashboard() {
   const { dashboardData, loading, fetchDashboard } = useContext(
     AdminDashboardContext,
   );
-
+ 
   useEffect(() => {
     fetchDashboard();
   }, []);
+
 
   if (loading) {
     return (
@@ -32,7 +34,7 @@ function AdminDashboard() {
     <div className="w-full p-6 font-[Montserrat] min-h-screen ">
       <div className="w-full flex items-center justify-between ">
         <div>
-          <h1 className="text-xl text-text font-bold ">Dashboard</h1>{" "}
+          <h1 className="text-xl text-text font-bold ">Dashboard</h1>
           <p className="text-sm text-muted">
             System overview and activity
           </p>{" "}
@@ -121,7 +123,7 @@ function AdminDashboard() {
           <tbody className="bg-bg-soft">
             {dashboardData?.recentUser?.map((item, idx) => {
               return (
-                <tr>
+                <tr key={idx}>
                   <td className="p-2 border border-border  ">{idx + 1}</td>
                   <td className="p-2 border border-border  ">{item.name}</td>
                   <td className="p-2 border border-border  ">{item.email}</td>

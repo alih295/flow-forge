@@ -32,7 +32,7 @@ export const loginUser = async (userData) => {
   }
 };
 
-export const getUserProfile = async (token) => {
+export const getUserProfile = async () => {
   try {
     const response = await api.get('/user/profile')
     const data = response.data

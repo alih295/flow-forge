@@ -1,13 +1,22 @@
-const notificationModel = require('../models/notification.model')
+const notificationModel = require("../models/notification.model");
 
 const getNotification = async (req, res, next) => {
   try {
-    const notification = await notificationModel
-      .find({
-        recipient: req.user._id,
-      })
-      .sort({ createdAt: -1 })
-      .populate("sender", "name email profile");
+    let notification;
+    if (req.user.role === "admin") {
+      notification = await notificationModel
+        .find({})
+        .sort({ createdAt: -1 })
+        .limit(10)
+        .populate("sender", "name email profile");
+    } else {
+      notification = await notificationModel
+        .find({
+          recipient: req.user._id,
+        })
+        .sort({ createdAt: -1 })
+        .populate("sender", "name email profile");
+    }
 
     return res.status(200).json({ success: true, notification });
   } catch (err) {
@@ -21,7 +30,6 @@ const markNotificationAsRead = async (req, res, next) => {
       recipient: req.user._id,
       _id: id,
     });
-    console.log(notification)
     if (!notification) {
       const err = new Error("recipient is not found");
       err.statusCode = 400;
@@ -49,16 +57,18 @@ const markAllNotificationAsRead = async (req, res, next) => {
         },
       },
     );
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: "all notificatio marked as read",
-        updatedCount: result.modifiedCount,
-      });
+    return res.status(200).json({
+      success: true,
+      message: "all notificatio marked as read",
+      updatedCount: result.modifiedCount,
+    });
   } catch (err) {
     return next(err);
   }
 };
 
-module.exports = { getNotification, markNotificationAsRead , markAllNotificationAsRead };
+module.exports = {
+  getNotification,
+  markNotificationAsRead,
+  markAllNotificationAsRead,
+};
