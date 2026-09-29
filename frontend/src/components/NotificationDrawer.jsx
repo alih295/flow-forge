@@ -1,9 +1,9 @@
 import React from "react";
-
+import { formatDistanceToNow } from "date-fns";
 function NotificationDrawer({ isOpen, onClose, notificationData }) {
   return (
     <div
-      className={`fixed inset-0 z-50 transition-all duration-300 ${
+      className={`fixed inset-0 z-50 transition-all  duration-300 ${
         isOpen ? "visible" : "invisible"
       }`}
     >
@@ -31,24 +31,35 @@ function NotificationDrawer({ isOpen, onClose, notificationData }) {
         </div>
 
         {/* Notifications */}
-        <div className="h-[calc(100%-5rem)] pb-25 overflow-y-auto p-4">
+        <div className="h-[calc(100%-5rem)] pb-25  overflow-y-auto p-4">
           {notificationData.map((item, idx) => {
             return (
               <div
                 key={idx}
-                className="w-full bg-yellow-300 flex items-center justify-between  rounded-lg px-4 gap-5 text-sm border border-border p-2"
+                className="w-full bg-bg-soft mt-3  flex items-center justify-between  rounded-lg px-4 text-sm border border-border p-2"
               >
-                <div className="w-20
-                 h-20 bg-red-600"></div>
-                 <div><h4 className="text-md font-medium">{item.title}</h4>
-                <h6 className="text-lg text-text font-semibold">
-                  <span className="text-md text-accent">
+                <div
+                  className="w-15 bg-cover bg-center bg-no-repeat
+                 h-15 rounded-full bg-[url('https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png')] overflow-hidden"
+                >
+                  <img className="w-full h-full object-cover "
+                    src={item.sender.profile.profilePic}
+                    alt="img"
+                  />
+                </div>
+                <div className="w-[80%] h-full flex flex-col gap-0.5 ">
+                  <h6 className="text-sm text-accent font-medium">
+                    {" "}
                     {item.sender.name}
-                  </span>
-                  Assigned you a task
-                </h6>
-                <p className="text-muted">20 min ago</p></div>
-                
+                  </h6>
+                  <h4 className="text-sm font-medium">{item.title}</h4>
+                  <h5 className="text-xs text-muted">{item.message}</h5>
+                  <p className="text-red-700 text-xs ">
+                    {formatDistanceToNow(new Date(item.createdAt), {
+                      addSuffix: true,
+                    })}
+                  </p>
+                </div>
               </div>
             );
           })}
@@ -58,9 +69,10 @@ function NotificationDrawer({ isOpen, onClose, notificationData }) {
               Mark all as Read
             </button>
 
-            <div className=" flex text-sm border border-border rounded-lg items-center justify-center hover:bg-accent hover:text-white transition-all duration-300 ease-in-out  py-1.5
-             px-4">
-            
+            <div
+              className=" flex text-sm border border-border rounded-lg items-center justify-center hover:bg-accent hover:text-white transition-all duration-300 ease-in-out  py-1.5
+             px-4"
+            >
               view All Notification
             </div>
           </div>

@@ -2,6 +2,7 @@ const taskModel = require("../models/Task.model");
 const userModel = require("../models/user.model");
 const workspaceModel = require("../models/workspace.model");
 const workspaceMemberModel = require("../models/workspace.member.model");
+const activityLogModel = require("../models/activity.log.model");
 
 const getDashboardData = async (req, res, next) => {
   try {
@@ -98,4 +99,16 @@ const workspaceData = async (req, res, next) => {
   }
 };
 
-module.exports = { getDashboardData , workspaceData };
+const getRecentActivity = async(req,res,next)=>{
+  try{
+    const recentActivity = await activityLogModel.find().sort({createdAt:-1}).limit(5).populate("user" , "name profile")
+    return res.status(200).json({success:true , recentActivity})
+
+  }catch(err){
+    return next(err)
+  }
+}
+
+
+
+module.exports = { getDashboardData , workspaceData , getRecentActivity };

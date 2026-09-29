@@ -1,20 +1,37 @@
 import React, { useContext, useEffect, useState } from "react";
-import { adminDashboard } from "../../services/AdminServices";
-import toast from "react-hot-toast";
+import { getRecentActivity } from "../../services/AdminServices";
 import Loader from "../../components/Loader";
 import TaskChart from "../../components/TaskChart";
 import { AdminDashboardContext } from "../../Context/AdminDashboardContext";
-import { NotificationContext } from "../../Context/NotificationContext";
-
+import { formatDistanceToNow } from "date-fns";
+import WorkspaceModel from "../../components/WorkspaceModel";
 function AdminDashboard() {
   const { dashboardData, loading, fetchDashboard } = useContext(
     AdminDashboardContext,
   );
- 
+  const [recentActivityLoader, setRecentActivityLoader] = useState(false);
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [showWorkspaceModel, setShowWorkspaceModel] = useState(false)
+
   useEffect(() => {
+    const fetchRecentActivity = async () => {
+      try {
+        setRecentActivityLoader(true);
+        const response = await getRecentActivity();
+        const data = response?.recentActivity;
+        if (response.success) {
+          setRecentActivity(data);
+        }
+        console.log(response);
+      } finally {
+        setRecentActivityLoader(false);
+      }
+    };
+
+    fetchRecentActivity();
+
     fetchDashboard();
   }, []);
-
 
   if (loading) {
     return (
@@ -39,9 +56,10 @@ function AdminDashboard() {
             System overview and activity
           </p>{" "}
         </div>
-        <button className="px-4 py-2 bg-accent text-white text-lg font-semibold cursor-pointer rounded-lg">
+        <button onClick={()=>setShowWorkspaceModel(true)} className="px-4 py-2 bg-accent text-white text-lg font-semibold cursor-pointer rounded-lg">
           + Create Workspace
         </button>
+        <WorkspaceModel isOpen={showWorkspaceModel} onClose={()=> setShowWorkspaceModel(false)}   />
       </div>
       <div className="w-full mt-10 flex items-center justify-between  h-50 ">
         <div className="w-[24%]   bg-white  p-5 border border-border  rounded-xl ">
@@ -88,19 +106,42 @@ function AdminDashboard() {
             <TaskChart taskData={taskData} />
           </div>
         </div>
-        <div className="w-[39%] h-full bg-white rounded-lg border border-border p-5">
+        <div className="w-[39%] overflow-auto h-full bg-white rounded-lg border border-border p-5">
           <h1 className="text-xl font-semibold text-text mb-10 ">
             Recent Activity
           </h1>
 
-          <div className="w-full p-2 mt-2   flex items-center justify-between border border-border bg-bg-soft rounded-lg ">
-            <div className="w-10 h-10 rounded-full border border-border "></div>
-            <div className="w-[80%] h-full ">
-              {" "}
-              <h4 className="text-lg ">User created</h4>{" "}
-              <p className="text-md text-muted">20min </p>{" "}
-            </div>
-          </div>
+          {recentActivityLoader ? (
+            <Loader />
+          ) : (
+            recentActivity.map((item, idx) => {
+              return (
+                <div
+                  key={idx}
+                  className="w-full p-2 mt-2   flex items-center justify-between border border-border bg-bg-soft rounded-lg "
+                >
+                  <div className="w-10 bg-cover  bg-[url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrb4OvIZOz-Z2RvlJ0xDl1E_e3qOfh_TQK1va1Z7gJ4g&s=10')] h-10 rounded-full border overflow-hidden border-border ">
+                    <img
+                      className="w-full h-full object-cover "
+                      src={item?.user?.profile?.profilePic}
+                      alt=""
+                    />
+                  </div>
+                  <div className="w-[80%] h-full ">
+                    {" "}
+                    <h4 className="text-lg ">{item.action}</h4>{" "}
+                    <h5>{item.entityType}</h5>
+                    <p className="text-md text-muted">
+                      {" "}
+                      {formatDistanceToNow(new Date(item.createdAt), {
+                        addSuffix: true,
+                      })}
+                    </p>{" "}
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
       <div className="w-full p-5 rounded-lg shadow bg-white mt-10 ">
