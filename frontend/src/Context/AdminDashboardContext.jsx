@@ -6,8 +6,8 @@ export const AdminDashboardContext = createContext();
 export const AdminDashboardProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [dashboardData, setDashboardData] = useState(null);
-  const fetchDashboard = async () => {
-    if (dashboardData) return;
+  const fetchDashboard = async (force = false) => {
+    if (dashboardData && !force) return;
     try {
       setLoading(true);
       const data = await adminDashboard();

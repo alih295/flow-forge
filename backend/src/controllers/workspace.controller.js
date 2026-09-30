@@ -7,9 +7,9 @@ const createNotification = require("../services/notification.service");
 
 const createWorkspace = async (req, res, next) => {
   try {
-    const id = req.user._id;
+    const userId = req.user._id;
     const { name, description } = req.body;
-    const owner = await userModel.findById(id);
+    const owner = await userModel.findById(userId);
     if (owner.status === "bocked" || owner.isDeleted) {
       const err = new Error("you don't have an access to create a workspace");
       err.statusCode = 400;
@@ -19,26 +19,26 @@ const createWorkspace = async (req, res, next) => {
     const workspace = await workspaceModel.create({
       name,
       description,
-      owner: owner._id,
+      owner:userId,
     });
 
     await workspaceMemberModel.create({
       workspace: workspace._id,
-      user: owner._id,
+      user: userId,
       role: "owner",
       status: "active",
       joinedAt: new Date(),
     });
     await createActivityLog({
       workspaceId: workspace._id,
-      userId: req.user._id,
+      userId: userId,
       action: "create workspace",
       entityType: "workspace",
       entityId: workspace._id,
     });
     await createNotification({
       senderId: req.user._id,
-      recipientId: workspace.user,
+      recipientId: userId,
       type: "create_workspace",
       title: "created workspace",
       message: "workspace is created",

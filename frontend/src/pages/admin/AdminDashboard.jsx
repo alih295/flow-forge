@@ -21,8 +21,8 @@ function AdminDashboard() {
         const data = response?.recentActivity;
         if (response.success) {
           setRecentActivity(data);
+      
         }
-        console.log(response);
       } finally {
         setRecentActivityLoader(false);
       }

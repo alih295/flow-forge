@@ -1,23 +1,49 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { X } from "lucide-react";
+import { createWorkspace } from "../services/WorkspaceServices";
+import toast, { Toaster } from "react-hot-toast";
+import Loader from "./Loader";
+import { AdminDashboardContext } from "../Context/AdminDashboardContext";
 
 function WorkspaceModel({ isOpen, onClose }) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { fetchDashboard } = useContext(AdminDashboardContext);
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    const workspaceData = {
-        name:name,
-        description:description
+    try {
+      setLoading(true);
+      const workspaceData = {
+        name: name,
+        description: description,
+      };
+      const response = await createWorkspace(workspaceData);
+      if (response?.success || response?.data?.success) {
+        toast.success("Workspace created successfully");
+
+        if (fetchDashboard) {
+          await fetchDashboard(true);
+        }
+
+        setName("");
+        setDescription("");
+        onClose();
+      }
+    } catch (err) {
+      toast.error(err.message);
+      console.error(err.message);
+    } finally {
+      setLoading(false);
     }
-    console.log(workspaceData)
   };
 
   return (
     <div
       className={`fixed inset-0 z-50 transition-all duration-300 ${isOpen ? "visible" : "invisible"}  `}
     >
+      <Toaster />
       <div
         onClick={onClose}
         className={`absolute inset-0 transition-opacity duration-300  bg-black/20 ${isOpen ? "opacity-100" : " opacity-0"}  `}
@@ -31,10 +57,14 @@ function WorkspaceModel({ isOpen, onClose }) {
             <X />
           </span>
         </div>
-        <form onSubmit={submitHandler} className="w-full flex flex-col gap-5 p-2 mt-5">
+        <form
+          onSubmit={submitHandler}
+          className="w-full flex flex-col gap-5 p-2 mt-5"
+        >
           <div className="w-full flex flex-col gap-3  ">
             <label>Name</label>
-            <input required
+            <input
+              required
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Workspace Name"
@@ -52,7 +82,7 @@ function WorkspaceModel({ isOpen, onClose }) {
             />
           </div>
           <button className="w-full py-1.5 bg-accent text-white font-semibold rounded-xl mt-5 text-lg ">
-            Create
+            {loading ? <Loader /> : "create"}
           </button>
         </form>
       </div>
