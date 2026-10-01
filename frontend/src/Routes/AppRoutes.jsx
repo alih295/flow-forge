@@ -13,6 +13,7 @@ import ManagerProtectedRoute from "../ProtectedRoutes/ManagerProtectedRote";
 import UserProtectedRoute from "../ProtectedRoutes/UserProtectedRoute";
 import UserLayout from "../Layouts/UserLayout";
 import UsersManagement from "../pages/admin/UsersManagement";
+import WorkspaceManagement from "../pages/admin/WorkspaceManagement";
 
 function AppRoutes() {
   return (
@@ -34,6 +35,8 @@ function AppRoutes() {
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="users" element={<UsersManagement />} />
+          <Route path="workspaces" element={<WorkspaceManagement />} />
+
         </Route>
 
         {/* manager Routes aare called here */}

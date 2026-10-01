@@ -57,9 +57,13 @@ const createWorkspace = async (req, res, next) => {
 
 const getWorkspaces = async (req, res, next) => {
   try {
-    if (req.user.role === "admin") {
+    const page = parseInt(req.query.page, 10 ) || 1
+    const limit = parseInt(req.query.limit, 10 ) || 10
+    const skip = (page - 1 )*limit
+
+    if (req.user.role === "admin" ) {
       const workspace = await workspaceModel
-        .find()
+        .find().skip(skip).limit(limit)
         .populate("owner", "-password");
       return res.status(200).json({ success: true, workspace });
     }
@@ -70,9 +74,7 @@ const getWorkspaces = async (req, res, next) => {
     const workspace = memberShip.map((membership) => membership.workspace);
     return res.status(200).json({ success: true, workspace });
 
-    const workspaces = await workspaceModel.find();
-
-    return res.status(200).json({ success: true, workspaces });
+  
   } catch (err) {
     return next(err.message);
   }
