@@ -1,7 +1,32 @@
 import { EllipsisVertical } from "lucide-react";
 import React from "react";
+import { useState } from "react";
+import { useEffect } from "react";
+import { fetchWorkspace } from "../../services/WorkspaceServices";
 
 function WorkspaceManagement() {
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
+  const limit = 10;
+  const [workspace, setWorkspace] = useState(null);
+
+  useEffect(() => {
+    const getWorkspace = async () => {
+      try {
+        const response = await fetchWorkspace(page, limit);
+        setWorkspace(response.workspace);
+        setTotalPage(response?.totalPage);
+      } catch (err) {
+        console.error(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    getWorkspace();
+  }, [page]);
+  console.log(workspace, totalPage);
+
   return (
     <section className="p-6 w-full min-h-screen font-[Montserrat] ">
       <div className="w-full flex items-center justify-between py-2 border-b border-border">
@@ -26,10 +51,7 @@ function WorkspaceManagement() {
         <table className="w-full bg-bg-soft">
           <thead>
             <tr className="w-full bg-dark text-white">
-              {/* text-left explicitely center alignment ko override karega */}
-              <th className="px-4 border border-border py-3.5 text-left">
-                Name
-              </th>
+              <th className="px-4 border border-border py-3.5 text-left"> Name</th>
               <th className="px-4 border border-border py-3.5 text-left">
                 Owner
               </th>
@@ -42,7 +64,6 @@ function WorkspaceManagement() {
               <th className="px-4 border border-border py-3.5 text-right">
                 Action
               </th>{" "}
-              {/* Actions usually right aligned hotay hain */}
             </tr>
           </thead>
           <tbody>
@@ -60,8 +81,8 @@ function WorkspaceManagement() {
           </tbody>
         </table>
         <div className="w-full bg-red-600 py-4 px-4">
-            <button>previous</button>
-            <p>page 1 of 10 </p>
+          <button>previous</button>
+          <p>page 1 of 10 </p>
         </div>
       </div>
     </section>

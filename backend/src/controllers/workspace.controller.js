@@ -19,7 +19,7 @@ const createWorkspace = async (req, res, next) => {
     const workspace = await workspaceModel.create({
       name,
       description,
-      owner:userId,
+      owner: userId,
     });
 
     await workspaceMemberModel.create({
@@ -57,24 +57,42 @@ const createWorkspace = async (req, res, next) => {
 
 const getWorkspaces = async (req, res, next) => {
   try {
-    const page = parseInt(req.query.page, 10 ) || 1
-    const limit = parseInt(req.query.limit, 10 ) || 10
-    const skip = (page - 1 )*limit
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const skip = (page - 1) * limit;
 
-    if (req.user.role === "admin" ) {
-      const workspace = await workspaceModel
-        .find().skip(skip).limit(limit)
+    let workspace;
+    let totalWorkspace;
+
+    if (req.user.role === "admin") {
+     workspace = await workspaceModel
+        .find()
+        .skip(skip)
+        .limit(limit)
         .populate("owner", "-password");
-      return res.status(200).json({ success: true, workspace });
+      totalWorkspace = await workspaceModel.countDocuments();
+    } else {
+      const memberShip = await workspaceMemberModel
+        .find({ user: req.user._id, status: "active" })
+        .populate({
+          path: "workspace",
+          populate: {
+            path: "owner",
+            select: "-password",
+          },
+        });
+        const allWorkspace = memberShip.map((item) => item.workspace);
+        totalWorkspace = allWorkspace.length;
+        workspace = allWorkspace.slice(skip, skip + limit);
     }
 
-    const memberShip = await workspaceMemberModel
-      .find({ user: req.user._id, status: "active" })
-      .populate("workspace");
-    const workspace = memberShip.map((membership) => membership.workspace);
-    return res.status(200).json({ success: true, workspace });
-
-  
+    return res.status(200).json({
+      success: true,
+      totalPges: Math.ceil(totalWorkspace / limit),
+      currentPage: page,
+      totalWorkspace,
+      workspace,
+    });
   } catch (err) {
     return next(err.message);
   }
