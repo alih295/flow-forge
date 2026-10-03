@@ -88,7 +88,6 @@ function UsersManagement() {
                         }
                         className="p-1 rounded hover:bg-white "
                       >
-                        {" "}
                         <EllipsisVertical size={18} />
                       </button>
                       {openMenu === item._id && (

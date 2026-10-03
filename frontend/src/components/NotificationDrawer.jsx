@@ -43,7 +43,7 @@ function NotificationDrawer({ isOpen, onClose, notificationData }) {
                  h-15 rounded-full bg-[url('https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png')] overflow-hidden"
                 >
                   <img className="w-full h-full object-cover "
-                    src={item.sender.profile.profilePic}
+                    src={item.sender.profile.profilePic || '/images/defaultavatar.jpg'}
                     alt="img"
                   />
                 </div>

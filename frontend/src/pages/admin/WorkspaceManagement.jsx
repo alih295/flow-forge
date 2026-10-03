@@ -3,20 +3,26 @@ import React from "react";
 import { useState } from "react";
 import { useEffect } from "react";
 import { fetchWorkspace } from "../../services/WorkspaceServices";
+import Loader from "../../components/Loader";
+import WorkspaceModel from "../../components/WorkspaceModel";
+import { useNavigate } from "react-router-dom";
 
 function WorkspaceManagement() {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(1);
   const limit = 10;
-  const [workspace, setWorkspace] = useState(null);
-
+  const [workspace, setWorkspace] = useState([]);
+  const [workspaceModel, setWorkspaceModel] = useState(false);
+  const [openMenu, setOpenMenu] = useState(false);
   useEffect(() => {
     const getWorkspace = async () => {
       try {
+        setLoading(true);
         const response = await fetchWorkspace(page, limit);
+        console.log(response);
         setWorkspace(response.workspace);
-        setTotalPage(response?.totalPage);
+        setTotalPage(response?.totalPages);
       } catch (err) {
         console.error(err.message);
       } finally {
@@ -25,16 +31,24 @@ function WorkspaceManagement() {
     };
     getWorkspace();
   }, [page]);
-  console.log(workspace, totalPage);
+  const navigate = useNavigate()
 
   return (
     <section className="p-6 w-full min-h-screen font-[Montserrat] ">
       <div className="w-full flex items-center justify-between py-2 border-b border-border">
         <h1 className="text-xl text-text font-bold">Workspace</h1>
-        <button className="px-4 py-2 bg-accent text-white rounded-lg font-medium text-lg cursor-pointer opacity-90 hover:opacity-100">
+        <button
+          onClick={() => setWorkspaceModel(true)}
+          className="px-4 py-2 bg-accent text-white rounded-lg font-medium text-lg cursor-pointer opacity-90 hover:opacity-100"
+        >
           + Create Workspace
         </button>
+        <WorkspaceModel
+          isOpen={workspaceModel}
+          onClose={() => setWorkspaceModel(false)}
+        />
       </div>
+
       <div className="w-full mt-5 flex py-2 gap-10">
         <input
           placeholder="search wokspaces..."
@@ -51,7 +65,9 @@ function WorkspaceManagement() {
         <table className="w-full bg-bg-soft">
           <thead>
             <tr className="w-full bg-dark text-white">
-              <th className="px-4 border border-border py-3.5 text-left"> Name</th>
+              <th className="px-4 border border-border py-3.5 text-left">
+                Name
+              </th>
               <th className="px-4 border border-border py-3.5 text-left">
                 Owner
               </th>
@@ -63,26 +79,84 @@ function WorkspaceManagement() {
               </th>
               <th className="px-4 border border-border py-3.5 text-right">
                 Action
-              </th>{" "}
+              </th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td className="px-4 py-3.5 border border-border ">
-                first workspace
-              </td>
-              <td className="px-4 py-3.5 border border-border ">Ali haider</td>
-              <td className="px-4 py-3.5 border border-border ">5</td>
-              <td className="px-4 py-3.5 border border-border ">active</td>
-              <td className="px-4 py-3.5 border border-border ">
-                <EllipsisVertical size={18} />
-              </td>
-            </tr>
+          <tbody className="w-full relative bg-bg-soft">
+            {loading ? (
+              <div className="w-full absolute flex items-center justify-center">
+                <Loader />
+              </div>
+            ) : (
+              workspace.map((item, idx) => {
+                return (
+                  <tr key={idx}>
+                    <td className="px-4 py-3.5 border border-border ">
+                      {item.name}
+                    </td>
+                    <td className="px-4 py-3.5 border border-border ">
+                      {item.owner.name}
+                    </td>
+                    <td className="px-4 py-3.5 border border-border ">
+                      {item.members}
+                    </td>
+                    <td className="px-4 py-3.5 border border-border ">
+                      {item.status}
+                    </td>
+                    <td className="p-2 border border-border relative ">
+                      <button
+                        onClick={() =>
+                          setOpenMenu(openMenu === item._id ? null : item._id)
+                        }
+                        className="p-1 rounded hover:bg-white "
+                      >
+                        <EllipsisVertical size={18} />
+                      </button>
+                      {openMenu === item._id && (
+                        <div className="absolute z-20 w-40 bg-white border border-border rounded-lg shadow-lg  right-2 top-10">
+                          <button onClick={()=>navigate('/admin/workspace/view')}  className="w-full cursor-pointer text-left px-4 py-2 hover:bg-bg-soft">
+                            View Workspace
+                          </button>
+                          <button className="w-full text-left px-4 py-2 hover:bg-bg-soft">
+                            Add Task
+                          </button>
+                          <button className="w-full text-left px-4 py-2 hover:bg-bg-soft">
+                            Edit workspace
+                          </button>
+                          <button className="w-full text-left px-4 py-2 hover:bg-bg-soft">
+                            Add Member
+                          </button>
+
+                          <button className="w-full text-red-700 text-left px-4 py-2 hover:bg-bg-soft">
+                            Delete workspace
+                          </button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
-        <div className="w-full bg-red-600 py-4 px-4">
-          <button>previous</button>
-          <p>page 1 of 10 </p>
+        <div className="w-full flex items-center justify-evenly mt-5 py-4 px-4">
+          <button
+            onClick={() => setPage((prev) => prev - 1)}
+            disabled={page === 1}
+            className="px-4 py-2 disabled:bg-gray-500  disabled:text-gray-200 disabled:cursor-not-allowed  bg-dark text-white rounded-lg"
+          >
+            previous
+          </button>
+          <p>
+            page {page} of {totalPage}{" "}
+          </p>
+          <button
+            disabled={page === totalPage}
+            className="px-4 bg-dark text-white py-2 rounded-lg disabled:bg-gray-400 disabled:text-gray-100 "
+            onClick={() => setPage((prev) => prev + 1)}
+          >
+            next
+          </button>
         </div>
       </div>
     </section>

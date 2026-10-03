@@ -14,6 +14,7 @@ import UserProtectedRoute from "../ProtectedRoutes/UserProtectedRoute";
 import UserLayout from "../Layouts/UserLayout";
 import UsersManagement from "../pages/admin/UsersManagement";
 import WorkspaceManagement from "../pages/admin/WorkspaceManagement";
+import ViewWorkspace from "../pages/admin/ViewWorkspace";
 
 function AppRoutes() {
   return (
@@ -36,6 +37,8 @@ function AppRoutes() {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="users" element={<UsersManagement />} />
           <Route path="workspaces" element={<WorkspaceManagement />} />
+          <Route path="workspace/view" element={<ViewWorkspace />} />
+
 
         </Route>
 

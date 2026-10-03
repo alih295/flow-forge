@@ -63,14 +63,16 @@ const getWorkspaces = async (req, res, next) => {
 
     let workspace;
     let totalWorkspace;
+  
 
     if (req.user.role === "admin") {
-     workspace = await workspaceModel
+      workspace = await workspaceModel
         .find()
         .skip(skip)
         .limit(limit)
         .populate("owner", "-password");
       totalWorkspace = await workspaceModel.countDocuments();
+     
     } else {
       const memberShip = await workspaceMemberModel
         .find({ user: req.user._id, status: "active" })
@@ -81,14 +83,31 @@ const getWorkspaces = async (req, res, next) => {
             select: "-password",
           },
         });
-        const allWorkspace = memberShip.map((item) => item.workspace);
-        totalWorkspace = allWorkspace.length;
-        workspace = allWorkspace.slice(skip, skip + limit);
+      const allWorkspace = memberShip.map((item) => item.workspace);
+      members = await workspaceMemberModel.countDocuments({
+        workspace: workspace._id,
+        status: "active",
+      });
+      totalWorkspace = allWorkspace.length;
+      workspace = allWorkspace.slice(skip, skip + limit);
     }
+
+
+     workspace = await Promise.all(
+        workspace.map(async (item) => {
+         const members = await workspaceMemberModel.countDocuments({
+            workspace: item._id,
+            status: "active",
+          });
+          item = item.toObject();
+          item.members = members
+          return item
+        }),
+      );
 
     return res.status(200).json({
       success: true,
-      totalPges: Math.ceil(totalWorkspace / limit),
+      totalPages: Math.ceil(totalWorkspace / limit),
       currentPage: page,
       totalWorkspace,
       workspace,

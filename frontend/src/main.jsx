@@ -7,7 +7,7 @@ import { AdminDashboardProvider } from "./Context/AdminDashboardContext.jsx";
 import { NotificationProvider } from "./Context/NotificationContext.jsx";
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
+ 
     <AppContext>
       <AdminDashboardProvider>
         <NotificationProvider>
@@ -15,5 +15,5 @@ createRoot(document.getElementById("root")).render(
         </NotificationProvider>
       </AdminDashboardProvider>
     </AppContext>
-  </StrictMode>,
+  ,
 );
