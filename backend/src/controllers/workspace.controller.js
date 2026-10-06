@@ -4,6 +4,7 @@ const workspaceModel = require("../models/workspace.model");
 const createActivityLog = require("../services/activity.log.service");
 const createNotification = require("../services/notification.service");
 const taskModel = require("../models/Task.model");
+const activityLogModel = require("../models/activity.log.model");
 const createWorkspace = async (req, res, next) => {
   try {
     const userId = req.user._id;
@@ -140,15 +141,18 @@ const getWorkspaceById = async (req, res, next) => {
     let totalTask;
     let members;
     let completedTask;
+    let recentActivity;
 
     if (isAdmin || isOwner) {
-      [members, totalTask, completedTask] = await Promise.all([
+      [members, totalTask, completedTask  , recentActivity] = await Promise.all([
         workspaceMemberModel.find({ workspace: workspaceId }).populate('user' , 'name email role profile'),
-        taskModel.countDocuments({ workspace: workspaceId }),
+        taskModel.find({ workspace: workspaceId }),
         taskModel.countDocuments({
           workspace: workspaceId,
           status: "completed",
         }),
+        activityLogModel.find({workspace:workspaceId}).sort({createdAt:-1}).limit(5).populate('user' , 'name email profile')
+        
       ]);
     } else {
       [members, totalTask, completedTask] = await promise.all([
@@ -164,7 +168,7 @@ const getWorkspaceById = async (req, res, next) => {
 
     return res
       .status(200)
-      .json({ success: true, workspace, members, totalTask, completedTask });
+      .json({ success: true, workspace, members, totalTask, completedTask , recentActivity });
   } catch (err) {
     return next(err);
   }

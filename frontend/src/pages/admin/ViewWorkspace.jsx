@@ -4,6 +4,7 @@ import { MoveLeft, Dot, UserGroup, Check, Plus, User } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import { fetchWorkspaceById } from "../../services/WorkspaceServices";
 import Loader from "../../components/Loader";
+import { formatDistanceToNow } from "date-fns";
 function ViewWorkspace() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -24,8 +25,7 @@ function ViewWorkspace() {
     };
     getWorkspaceById();
   }, []);
-  console.log(workspace)
- 
+  console.log(workspace);
 
   return (
     <section className="w-full p-6 min-h-screen ">
@@ -87,9 +87,11 @@ function ViewWorkspace() {
             <span className="text-accent   ">
               <UserGroup />
             </span>
-            Members
+            member
           </h5>
-          <h1 className="text-2xl text-text font-semibold">05</h1>
+          <h1 className="text-2xl text-text font-semibold">
+            {workspace.members?.length}
+          </h1>
         </div>
         <div className="w-64 p-5 border  border-border bg-white rounded-xl ">
           <h5
@@ -101,7 +103,9 @@ function ViewWorkspace() {
             </span>
             Toatl Tasks
           </h5>
-          <h1 className="text-2xl text-text font-semibold">05</h1>
+          <h1 className="text-2xl text-text font-semibold">
+            {workspace.totalTask?.length}
+          </h1>
         </div>
         <div className="w-64 p-5 border  border-border bg-white rounded-xl ">
           <h5
@@ -114,7 +118,9 @@ function ViewWorkspace() {
             </span>
             Completed Tasks
           </h5>
-          <h1 className="text-2xl text-text font-semibold">05</h1>
+          <h1 className="text-2xl text-text font-semibold">
+            {workspace.completedTask}
+          </h1>
         </div>
       </div>
       <div className="w-full min-h-52 flex items-center justify-between  mt-10">
@@ -131,10 +137,30 @@ function ViewWorkspace() {
               View
             </button>
           </header>
-          <div className="w-full mt-8 ">
-            <div className="w-full py-2 flex items-center justify-between ">
-              <p>build authentication api</p> <p>In Progress</p>
-            </div>
+          <div className="w-full mt-8  ">
+            {workspace.totalTask?.length <= 0 ? (
+              <div className="w-full">
+                {" "}
+                <p>you don't have any task yet </p>
+              </div>
+            ) : (
+              workspace.totalTask?.map((item, idx) => {
+                return (
+                  <div
+                    key={idx}
+                    className="w-full py-2 flex items-center justify-between "
+                  >
+                    <p>{item.title}</p>{" "}
+                    <p
+                      className="text-black
+               font-medium "
+                    >
+                      {item.status}
+                    </p>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
         <div className="w-[39%] h-full p-5 bg-white border border-border rounded-xl">
@@ -145,19 +171,26 @@ function ViewWorkspace() {
             </span>
           </header>
           <div className="w-full mt-8 ">
-            <div className="w-full flex items-center justify-between">
-              <h2
-                className="flex
+            {workspace.members?.map((item, idx) => {
+              return (
+                <div
+                  key={idx}
+                  className="w-full flex items-center justify-between"
+                >
+                  <h2
+                    className="flex
              items-center justify-center gap-2 text-text text-lg font-medium"
-              >
-                {" "}
-                <span>
-                  <User size={18} />
-                </span>{" "}
-                name
-              </h2>{" "}
-              <p> owner</p>{" "}
-            </div>
+                  >
+                    {" "}
+                    <span>
+                      <User size={18} />
+                    </span>{" "}
+                    {item.user?.name}
+                  </h2>{" "}
+                  <p> {item.role}</p>{" "}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -169,19 +202,32 @@ function ViewWorkspace() {
           </button>
         </header>
         <div className="w-full mt-8">
-          <div className="w-full flex items-center justify-between">
-            <h5
-              className="flex
+          {workspace.recentActivity?.length <= 0 ? (
+            <div>you don't have any rent activity yet</div>
+          ) : (
+            workspace.recentActivity?.map((item, idx) => {
+              return (
+                <div className="w-full flex items-center justify-between">
+                  <h5
+                    className="flex
          items-center gap-2 "
-            >
-              {" "}
-              <span>
-                <Dot size={13} />
-              </span>{" "}
-              ali haide create a task
-            </h5>
-            <p className="text-sm text-muted">time 20 min ago</p>
-          </div>
+                  >
+                    {" "}
+                    <span>
+                      <Dot size={13} />
+                    </span>{" "}
+                    {item.user.name} {item.action}
+                  </h5>
+                  <p className="text-sm text-muted">
+                    {" "}
+                    {formatDistanceToNow(new Date(item.createdAt), {
+                      addSuffix: true,
+                    })}
+                  </p>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
     </section>
