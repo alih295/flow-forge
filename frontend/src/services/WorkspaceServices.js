@@ -38,3 +38,14 @@ export const fetchWorkspaceById = async (id) => {
     throw new Error(error);
   }
 };
+export const fetchAvailabeUser = async(id)=>{
+  try{
+    const response = await api.get(`/workspace/${id}/available-user`)
+    const data = response.data
+    return data
+  }catch(err){
+    const error = err.response.data.message
+    console.error('available user errror' , err.message)
+    throw new Error(error)
+  }
+}

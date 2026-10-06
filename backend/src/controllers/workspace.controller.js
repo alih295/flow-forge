@@ -129,7 +129,7 @@ const getWorkspaceById = async (req, res, next) => {
       return next(err);
     }
     const isAdmin = req.user.role === "admin";
-    const isOwner = workspace.owner.toString() === userId.toString()
+    const isOwner = workspace.owner.toString() === userId.toString();
     const isMember = !!memberShip;
 
     if (!isAdmin && !isOwner && !isMember) {
@@ -144,20 +144,30 @@ const getWorkspaceById = async (req, res, next) => {
     let recentActivity;
 
     if (isAdmin || isOwner) {
-      [members, totalTask, completedTask  , recentActivity] = await Promise.all([
-        workspaceMemberModel.find({ workspace: workspaceId }).populate('user' , 'name email role profile'),
+      [members, totalTask, completedTask, recentActivity] = await Promise.all([
+        workspaceMemberModel
+          .find({ workspace: workspaceId })
+          .populate("user", "name email role profile"),
         taskModel.find({ workspace: workspaceId }),
         taskModel.countDocuments({
           workspace: workspaceId,
           status: "completed",
         }),
-        activityLogModel.find({workspace:workspaceId}).sort({createdAt:-1}).limit(5).populate('user' , 'name email profile')
-        
+        activityLogModel
+          .find({ workspace: workspaceId })
+          .sort({ createdAt: -1 })
+          .limit(5)
+          .populate("user", "name email profile"),
       ]);
     } else {
       [members, totalTask, completedTask] = await promise.all([
-        workspaceMemberModel.find({ workspace: workspaceId }).populate('user' , 'name email profile role'),
-        taskModel.countDocuments({ workspace: workspaceId, user: userId.toString() }),
+        workspaceMemberModel
+          .find({ workspace: workspaceId })
+          .populate("user", "name email profile role"),
+        taskModel.countDocuments({
+          workspace: workspaceId,
+          user: userId.toString(),
+        }),
         taskModel.countDocuments({
           workspace: workspaceId,
           user: userId.toString(),
@@ -166,9 +176,14 @@ const getWorkspaceById = async (req, res, next) => {
       ]);
     }
 
-    return res
-      .status(200)
-      .json({ success: true, workspace, members, totalTask, completedTask , recentActivity });
+    return res.status(200).json({
+      success: true,
+      workspace,
+      members,
+      totalTask,
+      completedTask,
+      recentActivity,
+    });
   } catch (err) {
     return next(err);
   }
@@ -204,10 +219,30 @@ const updateWorkspace = async (req, res, next) => {
     return next(err);
   }
 };
+const getAvailableUsers = async (req, res, next) => {
+  try {
+    const { workspaceId } = req.params;
+    const members = await workspaceMemberModel
+      .find({ workspace: workspaceId, status: "active" })
+      .select("user");
+
+    const memberIds = members.map((member) => member.user);
+
+    const users = await userModel.find({
+      _id: { $nin: memberIds },
+      status: "active",
+      isDeleted: false,
+    });
+    return res.status(200).json({ success: true, users });
+  } catch (err) {
+    return next(err);
+  }
+};
 
 module.exports = {
   createWorkspace,
   getWorkspaces,
   getWorkspaceById,
   updateWorkspace,
+  getAvailableUsers,
 };

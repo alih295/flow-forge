@@ -5,11 +5,14 @@ import toast, { Toaster } from "react-hot-toast";
 import { fetchWorkspaceById } from "../../services/WorkspaceServices";
 import Loader from "../../components/Loader";
 import { formatDistanceToNow } from "date-fns";
+import MemberModel from "../../components/MemberModel";
 function ViewWorkspace() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [workspace, setWorkspace] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [memberModel, setMemberModel] = useState(false)
+  const [taskModel, setTaskModel] = useState(false)
 
   useEffect(() => {
     const getWorkspaceById = async () => {
@@ -25,7 +28,7 @@ function ViewWorkspace() {
     };
     getWorkspaceById();
   }, []);
-  console.log(workspace);
+
 
   return (
     <section className="w-full p-6 min-h-screen ">
@@ -57,9 +60,11 @@ function ViewWorkspace() {
             className="flex
            gap-5"
           >
-            <button className="px-6 flex items-center justify-center gap-2 text-md py-2.5 bg-accent text-white font-medium rounded-xl ">
+            <button onClick={()=>setMemberModel(true)} className="px-6 flex items-center justify-center gap-2 text-md py-2.5 bg-accent text-white font-medium rounded-xl ">
               <Plus size={18} /> Add Member
+              
             </button>
+            <MemberModel id={id} isOpen={memberModel} setMemberModel={setMemberModel}/>
             <button
               className="px-6 flex items-center justify-center
              gap-2 text-md py-2.5 bg-dark text-white font-medium rounded-xl "
