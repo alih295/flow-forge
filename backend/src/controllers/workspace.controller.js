@@ -1,10 +1,9 @@
-const { default: mongoose } = require("mongoose");
 const userModel = require("../models/user.model");
 const workspaceMemberModel = require("../models/workspace.member.model");
 const workspaceModel = require("../models/workspace.model");
 const createActivityLog = require("../services/activity.log.service");
 const createNotification = require("../services/notification.service");
-
+const taskModel = require("../models/Task.model");
 const createWorkspace = async (req, res, next) => {
   try {
     const userId = req.user._id;
@@ -63,7 +62,6 @@ const getWorkspaces = async (req, res, next) => {
 
     let workspace;
     let totalWorkspace;
-  
 
     if (req.user.role === "admin") {
       workspace = await workspaceModel
@@ -72,7 +70,6 @@ const getWorkspaces = async (req, res, next) => {
         .limit(limit)
         .populate("owner", "-password");
       totalWorkspace = await workspaceModel.countDocuments();
-     
     } else {
       const memberShip = await workspaceMemberModel
         .find({ user: req.user._id, status: "active" })
@@ -92,18 +89,17 @@ const getWorkspaces = async (req, res, next) => {
       workspace = allWorkspace.slice(skip, skip + limit);
     }
 
-
-     workspace = await Promise.all(
-        workspace.map(async (item) => {
-         const members = await workspaceMemberModel.countDocuments({
-            workspace: item._id,
-            status: "active",
-          });
-          item = item.toObject();
-          item.members = members
-          return item
-        }),
-      );
+    workspace = await Promise.all(
+      workspace.map(async (item) => {
+        const members = await workspaceMemberModel.countDocuments({
+          workspace: item._id,
+          status: "active",
+        });
+        item = item.toObject();
+        item.members = members;
+        return item;
+      }),
+    );
 
     return res.status(200).json({
       success: true,
@@ -113,33 +109,64 @@ const getWorkspaces = async (req, res, next) => {
       workspace,
     });
   } catch (err) {
-    return next(err.message);
+    return next(err);
   }
 };
 
 const getWorkspaceById = async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const { workspaceId } = req.params;
+    const userId = req.user._id;
 
-    const member = await workspaceMemberModel
-      .findOne({
-        user: req.user._id.toString(),
-        workspace: id,
-      })
-      .populate("user")
-      .populate("workspace");
+    const [workspace, memberShip] = await Promise.all([
+      workspaceModel.findById(workspaceId),
+      workspaceMemberModel.findOne({ workspace: workspaceId, user: userId }),
+    ]);
+    if (!workspace) {
+      const err = new Error("workspace not found");
+      err.statusCode = 404;
+      return next(err);
+    }
+    const isAdmin = req.user.role === "admin";
+    const isOwner = workspace.owner.toString() === userId.toString()
+    const isMember = !!memberShip;
 
-    if (!member && req.user.role !== "admin") {
-      const err = new Error("You don't have permission to see this workspace");
-
+    if (!isAdmin && !isOwner && !isMember) {
+      const err = new Error("you don't have permssion to access this route");
       err.statusCode = 403;
       return next(err);
     }
 
-    const workspace = await workspaceModel.findById(id);
-    return res.status(200).json({ success: true, workspace });
+    let totalTask;
+    let members;
+    let completedTask;
+
+    if (isAdmin || isOwner) {
+      [members, totalTask, completedTask] = await Promise.all([
+        workspaceMemberModel.find({ workspace: workspaceId }).populate('user' , 'name email role profile'),
+        taskModel.countDocuments({ workspace: workspaceId }),
+        taskModel.countDocuments({
+          workspace: workspaceId,
+          status: "completed",
+        }),
+      ]);
+    } else {
+      [members, totalTask, completedTask] = await promise.all([
+        workspaceMemberModel.find({ workspace: workspaceId }).populate('user' , 'name email profile role'),
+        taskModel.countDocuments({ workspace: workspaceId, user: userId.toString() }),
+        taskModel.countDocuments({
+          workspace: workspaceId,
+          user: userId.toString(),
+          status: "completed",
+        }),
+      ]);
+    }
+
+    return res
+      .status(200)
+      .json({ success: true, workspace, members, totalTask, completedTask });
   } catch (err) {
-    return next(err.message);
+    return next(err);
   }
 };
 

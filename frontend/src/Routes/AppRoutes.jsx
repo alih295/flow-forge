@@ -37,7 +37,7 @@ function AppRoutes() {
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="users" element={<UsersManagement />} />
           <Route path="workspaces" element={<WorkspaceManagement />} />
-          <Route path="workspace/view" element={<ViewWorkspace />} />
+          <Route path="workspace/view/:id" element={<ViewWorkspace />} />
 
 
         </Route>

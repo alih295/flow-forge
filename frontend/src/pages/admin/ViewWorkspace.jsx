@@ -1,9 +1,31 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { MoveLeft, Dot, UserGroup, Check, Plus, User } from "lucide-react";
-
+import toast, { Toaster } from "react-hot-toast";
+import { fetchWorkspaceById } from "../../services/WorkspaceServices";
+import Loader from "../../components/Loader";
 function ViewWorkspace() {
+  const { id } = useParams();
   const navigate = useNavigate();
+  const [workspace, setWorkspace] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const getWorkspaceById = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchWorkspaceById(id);
+        setWorkspace(data);
+      } catch (err) {
+        toast.error(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    getWorkspaceById();
+  }, []);
+  console.log(workspace)
+ 
 
   return (
     <section className="w-full p-6 min-h-screen ">
@@ -18,16 +40,16 @@ function ViewWorkspace() {
         Back to Workspace
       </button>
       <div className="w-full min-h-48 flex items-center justify-between  ">
+        <Toaster />
         <div className="w-[60%] ">
           <h1 className="text-3xl text-text font-bold capitalize ">
-            workspace name
+            {workspace.workspace?.name}
           </h1>
           <h4 className="text-sm text-muted mt-4 ">
-            workspace desciption Lorem ipsum dolor sit amet consectetur
-            adipisicing elit. Voluptatibus, molestiae?
+            {workspace.workspace?.description}
           </h4>
           <h2 className="text-xl mt-4 text-accent font-semibold capitalize">
-            owner
+            {workspace.member?.role}
           </h2>
         </div>
         <div>
@@ -35,11 +57,14 @@ function ViewWorkspace() {
             className="flex
            gap-5"
           >
-            <button className="px-6 py-2.5 bg-accent text-white font-medium rounded-xl ">
-              + Add Member
+            <button className="px-6 flex items-center justify-center gap-2 text-md py-2.5 bg-accent text-white font-medium rounded-xl ">
+              <Plus size={18} /> Add Member
             </button>
-            <button className="px-6 py-2.5 bg-dark text-white font-medium rounded-xl ">
-              Add task
+            <button
+              className="px-6 flex items-center justify-center
+             gap-2 text-md py-2.5 bg-dark text-white font-medium rounded-xl "
+            >
+              <Plus size={18} /> Add task
             </button>
           </div>
           <p className="mt-4 flex items-center text-green-700 font-medium justify-start gap-2 ">
@@ -137,14 +162,26 @@ function ViewWorkspace() {
         </div>
       </div>
       <div className="w-full mt-10 min-h-64 p-5 mb-10 bg-white rounded-xl border border-border">
-        <header className="w-full flex items-center justify-between"><h1 className="text-xl text-text font-semibold ">Recent activity</h1>     <button className="text-lg text-accent font-bold cursor-pointer">View</button></header>
+        <header className="w-full flex items-center justify-between">
+          <h1 className="text-xl text-text font-semibold ">Recent activity</h1>{" "}
+          <button className="text-lg text-accent font-bold cursor-pointer">
+            View
+          </button>
+        </header>
         <div className="w-full mt-8">
-    <div className="w-full flex items-center justify-between">
-        <h5 className="flex
-         items-center gap-2 "> <span><Dot size={13}/></span> ali haide create a task</h5>
-        <p className="text-sm text-muted">time 20 min ago</p>
-    </div>
-
+          <div className="w-full flex items-center justify-between">
+            <h5
+              className="flex
+         items-center gap-2 "
+            >
+              {" "}
+              <span>
+                <Dot size={13} />
+              </span>{" "}
+              ali haide create a task
+            </h5>
+            <p className="text-sm text-muted">time 20 min ago</p>
+          </div>
         </div>
       </div>
     </section>

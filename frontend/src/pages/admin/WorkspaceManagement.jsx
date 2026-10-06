@@ -114,7 +114,7 @@ function WorkspaceManagement() {
                       </button>
                       {openMenu === item._id && (
                         <div className="absolute z-20 w-40 bg-white border border-border rounded-lg shadow-lg  right-2 top-10">
-                          <button onClick={()=>navigate('/admin/workspace/view')}  className="w-full cursor-pointer text-left px-4 py-2 hover:bg-bg-soft">
+                          <button onClick={()=>navigate(`/admin/workspace/view/${item._id}`)}  className="w-full cursor-pointer text-left px-4 py-2 hover:bg-bg-soft">
                             View Workspace
                           </button>
                           <button className="w-full text-left px-4 py-2 hover:bg-bg-soft">

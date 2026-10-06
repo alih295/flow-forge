@@ -22,7 +22,19 @@ export const fetchWorkspace = async (page, limit) => {
     return data;
   } catch (err) {
     const error = err.response.data.message;
-    console.error("fetch workspace api error ", err.message ,  error);
+    console.error("fetch workspace api error ", err.message, error);
     throw new Error();
+  }
+};
+
+export const fetchWorkspaceById = async (id) => {
+  try {
+    const response = await api.get(`/workspace/by-id/${id}`);
+    const data = response.data;
+    return data;
+  } catch (err) {
+    const error = err.response.data.message || "somehing went wrong";
+    console.error(err.message);
+    throw new Error(error);
   }
 };
