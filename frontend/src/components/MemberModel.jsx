@@ -1,12 +1,18 @@
 import { X } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { fetchAvailabeUser } from "../services/WorkspaceServices";
+import {
+  addWorkspaceMember,
+  fetchAvailabeUser,
+} from "../services/WorkspaceServices";
+import toast, { Toaster } from "react-hot-toast";
+import { Loader } from "lucide-react";
 
 function MemberModel({ isOpen, setMemberModel, id }) {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [userId, setUserId] = useState(null);
-  const [role, setRole] = useState('member')
+  const [role, setRole] = useState("member");
+  const [memberLoading, setMemberLoading] = useState(false);
 
   useEffect(() => {
     const getAvailableUsers = async () => {
@@ -26,10 +32,21 @@ function MemberModel({ isOpen, setMemberModel, id }) {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      console.log(userId);
-      console.log(role)
+      setMemberLoading(true);
+      const workspaceData = {
+        userId: userId,
+        role: role,
+      };
+      const data = await addWorkspaceMember(workspaceData, id);
+      if (data.succes) {
+        toast.success("member added successfully");
+        setMemberModel(false);
+      }
     } catch (err) {
       console.error(err.message);
+      toast.error(err.message);
+    } finally {
+      setMemberLoading(false);
     }
   };
 
@@ -37,6 +54,7 @@ function MemberModel({ isOpen, setMemberModel, id }) {
     <div
       className={`fixed z-50  inset-0 transition-all duration-300  ${isOpen ? "visible" : "invisible"} `}
     >
+      <Toaster />
       <div
         onClick={() => setMemberModel(false)}
         className={`absolute
@@ -50,7 +68,7 @@ function MemberModel({ isOpen, setMemberModel, id }) {
          items-center justify-between text-black border-b border-black py-1.5
          "
         >
-          <h1>Add Member</h1>{" "}
+          <h1>Add Member</h1>
           <span
             className="cursor-pointer"
             onClick={() => {
@@ -60,19 +78,28 @@ function MemberModel({ isOpen, setMemberModel, id }) {
             <X />
           </span>
         </header>
-        <form onSubmit={submitHandler} className="w-full flex flex-col items-center gap-5
-         h-60 mt-10  ">
-          <div className="w-full py-1.5 border border-border rounded-xl ">
-            <h1 className="text-lg font-medium">Select User</h1>
-            <select onChange={(e)=>setUserId(e.target.value)}
-              className="w-full border py-2 px-6 rounded-xl mt-4
-                 "
+        <form
+          onSubmit={submitHandler}
+          className="w-full flex flex-col items-center gap-5
+         h-60 mt-10  "
+        >
+          <div className="w-full py-1.5 border  border-border rounded-xl ">
+            <h1 className="text-lg font-medium">Select a user</h1>
+            <select
+              onChange={(e) => setUserId(e.target.value)}
+              className="w-full rounded-lg border border-border
+  bg-white px-4 py-3 text-sm text-text
+  outline-none transition 
+  focus:border-primary focus:ring-2 focus:ring-primary/20 "
             >
-                <option disabled value="">Select user</option>
+              <option disabled value="">
+                Select user
+              </option>
               {users.map((item, idx) => {
                 return (
-                  <option key={idx}  value={item._id} >
-                    name {item.name} email {item.email}{" "}
+                  <option className="w-full block" key={idx} value={item._id}>
+                    <span className="font-medium text-lg">{item.name}</span> <br />
+                    {item.email}
                   </option>
                 );
               })}
@@ -80,16 +107,21 @@ function MemberModel({ isOpen, setMemberModel, id }) {
           </div>
           <div className="w-full ">
             <h1 className="text-lg font-medium">Select Role</h1>
-            <select className="w-full px-6 mt-4 py-2 border rounded-lg " onChange={(e)=>setRole(e.target.value)}>
-                <option disabled value="">Select Role</option>
-                <option value="member">member</option>
-                <option value="manager">manager</option>
+            <select
+              className="w-full px-6 mt-4 py-2 border rounded-lg "
+              onChange={(e) => setRole(e.target.value)}
+            >
+              <option disabled value="">
+                Select Role
+              </option>
+              <option value="member">member</option>
+              <option value="manager">manager</option>
             </select>
           </div>
 
-
-
-          <button className="w-full py-2 bg-accent text-white font-medium rounded-xl cursor-pointer">Add member</button>
+          <button className="w-full py-2 bg-accent text-white font-medium rounded-xl cursor-pointer">
+            {memberLoading ? <Loader /> : "Add member"}
+          </button>
         </form>
       </div>
     </div>

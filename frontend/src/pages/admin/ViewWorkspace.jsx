@@ -6,6 +6,7 @@ import { fetchWorkspaceById } from "../../services/WorkspaceServices";
 import Loader from "../../components/Loader";
 import { formatDistanceToNow } from "date-fns";
 import MemberModel from "../../components/MemberModel";
+import TaskModel from "../../components/TaskModel";
 function ViewWorkspace() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -65,12 +66,13 @@ function ViewWorkspace() {
               
             </button>
             <MemberModel id={id} isOpen={memberModel} setMemberModel={setMemberModel}/>
-            <button
+            <button onClick={()=>setTaskModel(true)}
               className="px-6 flex items-center justify-center
              gap-2 text-md py-2.5 bg-dark text-white font-medium rounded-xl "
             >
               <Plus size={18} /> Add task
             </button>
+            <TaskModel isOpen={taskModel} onClose={()=>setTaskModel(false)}/>
           </div>
           <p className="mt-4 flex items-center text-green-700 font-medium justify-start gap-2 ">
             <span>
