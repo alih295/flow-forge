@@ -12,8 +12,8 @@ function ViewWorkspace() {
   const navigate = useNavigate();
   const [workspace, setWorkspace] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [memberModel, setMemberModel] = useState(false)
-  const [taskModel, setTaskModel] = useState(false)
+  const [memberModel, setMemberModel] = useState(false);
+  const [taskModel, setTaskModel] = useState(false);
 
   useEffect(() => {
     const getWorkspaceById = async () => {
@@ -29,7 +29,6 @@ function ViewWorkspace() {
     };
     getWorkspaceById();
   }, []);
-
 
   return (
     <section className="w-full p-6 min-h-screen ">
@@ -61,18 +60,29 @@ function ViewWorkspace() {
             className="flex
            gap-5"
           >
-            <button onClick={()=>setMemberModel(true)} className="px-6 flex items-center justify-center gap-2 text-md py-2.5 bg-accent text-white font-medium rounded-xl ">
+            <button
+              onClick={() => setMemberModel(true)}
+              className="px-6 flex items-center justify-center gap-2 text-md py-2.5 bg-accent text-white font-medium rounded-xl "
+            >
               <Plus size={18} /> Add Member
-              
             </button>
-            <MemberModel id={id} isOpen={memberModel} setMemberModel={setMemberModel}/>
-            <button onClick={()=>setTaskModel(true)}
+            <MemberModel
+              id={id}
+              isOpen={memberModel}
+              setMemberModel={setMemberModel}
+            />
+            <button
+              onClick={() => setTaskModel(true)}
               className="px-6 flex items-center justify-center
              gap-2 text-md py-2.5 bg-dark text-white font-medium rounded-xl "
             >
               <Plus size={18} /> Add task
             </button>
-            <TaskModel isOpen={taskModel} onClose={()=>setTaskModel(false)}/>
+            <TaskModel
+              id={id}
+              isOpen={taskModel}
+              onClose={() => setTaskModel(false)}
+            />
           </div>
           <p className="mt-4 flex items-center text-green-700 font-medium justify-start gap-2 ">
             <span>
@@ -105,7 +115,10 @@ function ViewWorkspace() {
             className="text-muted flex
              items-center justify-between mb-5"
           >
-            <span className="text-accent   ">
+            <span
+              onClick={() => setMemberModel(true)}
+              className="text-accent   "
+            >
               <Check />
             </span>
             Toatl Tasks
@@ -173,7 +186,10 @@ function ViewWorkspace() {
         <div className="w-[39%] h-full p-5 bg-white border border-border rounded-xl">
           <header className="w-full flex items-center justify-between">
             <h1 className="text-xl font-semibold text-text">Members</h1>
-            <span className="text-accent cursor-pointer font-semibold">
+            <span
+              onClick={() => setMemberModel(true)}
+              className="text-accent cursor-pointer font-semibold"
+            >
               <Plus size={18} />
             </span>
           </header>
@@ -214,7 +230,10 @@ function ViewWorkspace() {
           ) : (
             workspace.recentActivity?.map((item, idx) => {
               return (
-                <div className="w-full flex items-center justify-between">
+                <div
+                  key={idx}
+                  className="w-full flex items-center justify-between"
+                >
                   <h5
                     className="flex
          items-center gap-2 "

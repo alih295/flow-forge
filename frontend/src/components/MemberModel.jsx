@@ -5,7 +5,7 @@ import {
   fetchAvailabeUser,
 } from "../services/WorkspaceServices";
 import toast, { Toaster } from "react-hot-toast";
-import { Loader } from "lucide-react";
+import Loader from "../components/Loader";
 
 function MemberModel({ isOpen, setMemberModel, id }) {
   const [loading, setLoading] = useState(false);

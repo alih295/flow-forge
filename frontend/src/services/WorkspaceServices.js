@@ -38,27 +38,41 @@ export const fetchWorkspaceById = async (id) => {
     throw new Error(error);
   }
 };
-export const fetchAvailabeUser = async(id)=>{
-  try{
-    const response = await api.get(`/workspace/${id}/available-user`)
-    const data = response.data
-    return data
-  }catch(err){
-    const error = err.response.data.message
-    console.error('available user errror' , err.message)
-    throw new Error(error)
+export const fetchAvailabeUser = async (id) => {
+  try {
+    const response = await api.get(`/workspace/${id}/available-user`);
+    const data = response.data;
+    return data;
+  } catch (err) {
+    const error = err.response.data.message;
+    console.error("available user errror", err.message);
+    throw new Error(error);
   }
-}
+};
 
-export const addWorkspaceMember = async(workspaceData , id)=>{
-  try{
-    const response = await api.post(`/workspace/${id}/add-members` , workspaceData)
-    const data = response.data
-    return data
-
-  }catch(err){
-    const error = err.response.data.message
-    console.error('add workspace member api error is ' , err.message)
-    throw new Error(error)
+export const addWorkspaceMember = async (workspaceData, id) => {
+  try {
+    const response = await api.post(
+      `/workspace/${id}/add-members`,
+      workspaceData,
+    );
+    const data = response.data;
+    return data;
+  } catch (err) {
+    const error = err.response.data.message;
+    console.error("add workspace member api error is ", err.message);
+    throw new Error(error);
   }
-}
+};
+
+export const deleteWorkspace = async (id) => {
+  try {
+    const response = await api.delete(`/workspace/${id}/delete`);
+    const data = response.data;
+    return data;
+  } catch (err) {
+    const error = err.response.data.message;
+    console.error("workspace delete api error is ", err.message);
+    throw new Error(error);
+  }
+};

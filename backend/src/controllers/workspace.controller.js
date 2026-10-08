@@ -238,6 +238,29 @@ const getAvailableUsers = async (req, res, next) => {
     return next(err);
   }
 };
+const deleteWorkspace = async (req, res, next) => {
+  try {
+    const { workspaceId } = req.params;
+    const isAdmin = req.user.role === "admin";
+    const workspace = await workspaceModel.findById(workspaceId);
+    if (!isAdmin) {
+      const err = new Error("you don't have permission to this route");
+      err.statusCode = 403;
+      return next(err);
+    }
+    if (!workspace) {
+      const err = new Error("Workspace not found");
+      err.statusCode = 404;
+      return next(err);
+    }
+    await workspaceModel.findByIdAndDelete(workspaceId);
+    return res
+      .status(200)
+      .json({ success: true, message: "workspace deleted successfully" });
+  } catch (err) {
+    return next(err);
+  }
+};
 
 module.exports = {
   createWorkspace,
@@ -245,4 +268,5 @@ module.exports = {
   getWorkspaceById,
   updateWorkspace,
   getAvailableUsers,
+  deleteWorkspace,
 };

@@ -6,6 +6,7 @@ const {
   getWorkspaceById,
   updateWorkspace,
   getAvailableUsers,
+  deleteWorkspace,
 } = require("../controllers/workspace.controller");
 const authWorkspace = require("../middleware/authorize.workspace");
 const router = express.Router();
@@ -35,5 +36,6 @@ router.get(
   authorizeRole("admin"),
   getAvailableUsers,
 );
+router.delete('/workspace/:workspaceId/delete' , authUser , authorizeRole('admin') , deleteWorkspace)
 
 module.exports = router;

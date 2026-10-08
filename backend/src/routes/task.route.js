@@ -1,5 +1,5 @@
 const express = require('express')
-const { createTask , getTasks, updateTaskDetails, updateTaskStatus, deleteTask} = require('../controllers/task.controller')
+const { createTask , getTasks, updateTaskDetails, updateTaskStatus, deleteTask, getWorkspaceMember} = require('../controllers/task.controller')
 const {authUser} = require('../middleware/auth.middleware')
 const authWorkspace = require('../middleware/authorize.workspace')
 const router  = express.Router()
@@ -10,6 +10,7 @@ router.get('/workspace/:workspaceId/get-tasks' , authUser , authWorkspace , getT
 router.patch('/workspace/:workspaceId/tasks/:taskId' , authUser , authWorkspace , updateTaskDetails )
 router.patch('/workspace/:workspaceId/tasks/:taskId/status' , authUser , authWorkspace , updateTaskStatus)
 router.delete('/workspace/:workspaceId/tasks/:taskId' , authUser , authWorkspace , deleteTask)
+router.get('/workspace/:workspaceId/members' , authUser , authWorkspace , getWorkspaceMember)
 
 
 

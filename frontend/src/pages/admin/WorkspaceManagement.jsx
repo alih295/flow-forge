@@ -2,10 +2,11 @@ import { EllipsisVertical } from "lucide-react";
 import React from "react";
 import { useState } from "react";
 import { useEffect } from "react";
-import { fetchWorkspace } from "../../services/WorkspaceServices";
+import { deleteWorkspace, fetchWorkspace } from "../../services/WorkspaceServices";
 import Loader from "../../components/Loader";
 import WorkspaceModel from "../../components/WorkspaceModel";
 import { useNavigate } from "react-router-dom";
+import toast,{Toaster} from 'react-hot-toast'
 
 function WorkspaceManagement() {
   const [loading, setLoading] = useState(false);
@@ -15,12 +16,12 @@ function WorkspaceManagement() {
   const [workspace, setWorkspace] = useState([]);
   const [workspaceModel, setWorkspaceModel] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   useEffect(() => {
     const getWorkspace = async () => {
       try {
         setLoading(true);
         const response = await fetchWorkspace(page, limit);
-        console.log(response);
         setWorkspace(response.workspace);
         setTotalPage(response?.totalPages);
       } catch (err) {
@@ -30,12 +31,26 @@ function WorkspaceManagement() {
       }
     };
     getWorkspace();
-  }, [page]);
-  const navigate = useNavigate()
+  }, [page , deleteLoading]);
+  const navigate = useNavigate();
+  const handleDelet = async (id) => {
+    try{
+      setDeleteLoading(true  )
+      const data = await deleteWorkspace(id)
+      if(data.success){
+        toast.success(data.message)
+      }
+    }catch(err){
+      toast.error(err.message)
+    }finally{
+      setDeleteLoading(false)
+    }
+  };
 
   return (
     <section className="p-6 w-full min-h-screen font-[Montserrat] ">
       <div className="w-full flex items-center justify-between py-2 border-b border-border">
+        <Toaster/>
         <h1 className="text-xl text-text font-bold">Workspace</h1>
         <button
           onClick={() => setWorkspaceModel(true)}
@@ -103,7 +118,7 @@ function WorkspaceManagement() {
                     <td className="px-4 py-3.5 border border-border ">
                       {item.status}
                     </td>
-                    <td className="p-2 border border-border relative ">
+                    <td className="p-2 border  border-border relative ">
                       <button
                         onClick={() =>
                           setOpenMenu(openMenu === item._id ? null : item._id)
@@ -113,22 +128,27 @@ function WorkspaceManagement() {
                         <EllipsisVertical size={18} />
                       </button>
                       {openMenu === item._id && (
-                        <div className="absolute z-20 w-40 bg-white border border-border rounded-lg shadow-lg  right-2 top-10">
-                          <button onClick={()=>navigate(`/admin/workspace/view/${item._id}`)}  className="w-full cursor-pointer text-left px-4 py-2 hover:bg-bg-soft">
+                        <div className="absolute z-20 w-64 bg-white border border-border rounded-lg shadow-lg  right-2 top-10">
+                          <button
+                            onClick={() =>
+                              navigate(`/admin/workspace/view/${item._id}`)
+                            }
+                            className="w-full  text-left px-4 py-2 cursor-pointer hover:bg-bg-soft"
+                          >
                             View Workspace
                           </button>
-                          <button className="w-full text-left px-4 py-2 hover:bg-bg-soft">
+                          <button className="w-full cursor-pointer text-left px-4 py-2 hover:bg-bg-soft">
                             Add Task
                           </button>
-                          <button className="w-full text-left px-4 py-2 hover:bg-bg-soft">
+                          <button className="w-full cursor-pointer text-left px-4 py-2 hover:bg-bg-soft">
                             Edit workspace
                           </button>
-                          <button className="w-full text-left px-4 py-2 hover:bg-bg-soft">
+                          <button className="w-full cursor-pointer text-left px-4 py-2 hover:bg-bg-soft">
                             Add Member
                           </button>
 
-                          <button className="w-full text-red-700 text-left px-4 py-2 hover:bg-bg-soft">
-                            Delete workspace
+                          <button onClick={()=>{handleDelet(item._id)}} className="w-full cursor-pointer text-red-700 text-left px-4 py-2 hover:bg-bg-soft">
+                          {deleteLoading ? <Loader/>:'delete Workspace'}
                           </button>
                         </div>
                       )}

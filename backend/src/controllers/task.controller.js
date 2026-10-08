@@ -253,6 +253,17 @@ const deleteTask = async (req, res, next) => {
     return next(err);
   }
 };
+const getWorkspaceMember = async (req, res, next) => {
+  try {
+    const { workspaceId } = req.params;
+    const members = await workspaceMemberModel
+      .find({ workspace: workspaceId, status: "active" })
+      .populate("user", "name email role ");
+    return res.status(200).json({ success: true, members });
+  } catch (err) {
+    return next(err);
+  }
+};
 
 module.exports = {
   createTask,
@@ -260,4 +271,5 @@ module.exports = {
   updateTaskDetails,
   updateTaskStatus,
   deleteTask,
+  getWorkspaceMember
 };
