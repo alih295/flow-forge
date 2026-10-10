@@ -194,7 +194,7 @@ const updateWorkspace = async (req, res, next) => {
     const { workspaceId } = req.params;
     const { name, description } = req.body;
     const updateWorkspace = await workspaceModel.findByIdAndUpdate(
-      id,
+      workspaceId,
       { name, description },
       { new: true },
     );
@@ -207,7 +207,7 @@ const updateWorkspace = async (req, res, next) => {
     });
     await createNotification({
       senderId: req.user._id,
-      recipientId: updateWorkspace.user,
+      recipientId: updateWorkspace.owner,
       type: "update_wprkspace",
       title: "update details of workspace",
       message: "update details of workspace",

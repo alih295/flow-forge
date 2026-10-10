@@ -1,12 +1,17 @@
-import { EllipsisVertical } from "lucide-react";
+import { EllipsisVertical, FaceExpressionless } from "lucide-react";
 import React from "react";
 import { useState } from "react";
 import { useEffect } from "react";
-import { deleteWorkspace, fetchWorkspace } from "../../services/WorkspaceServices";
+import {
+  deleteWorkspace,
+  fetchWorkspace,
+} from "../../services/WorkspaceServices";
 import Loader from "../../components/Loader";
 import WorkspaceModel from "../../components/WorkspaceModel";
 import { useNavigate } from "react-router-dom";
-import toast,{Toaster} from 'react-hot-toast'
+import toast, { Toaster } from "react-hot-toast";
+import TaskModel from "../../components/TaskModel";
+import MemberModel from "../../components/MemberModel";
 
 function WorkspaceManagement() {
   const [loading, setLoading] = useState(false);
@@ -17,6 +22,10 @@ function WorkspaceManagement() {
   const [workspaceModel, setWorkspaceModel] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [memberModel, setMemberModel] = useState(false);
+  const [taskModel, setTaskModel] = useState(false);
+  const [mode, setMode] = useState("create");
+  const [selectedWorkspace, setSelectedWorkspace] = useState(null);
   useEffect(() => {
     const getWorkspace = async () => {
       try {
@@ -31,34 +40,40 @@ function WorkspaceManagement() {
       }
     };
     getWorkspace();
-  }, [page , deleteLoading]);
+  }, [page, deleteLoading]);
   const navigate = useNavigate();
   const handleDelet = async (id) => {
-    try{
-      setDeleteLoading(true  )
-      const data = await deleteWorkspace(id)
-      if(data.success){
-        toast.success(data.message)
+    try {
+      setDeleteLoading(true);
+      const data = await deleteWorkspace(id);
+      if (data.success) {
+        toast.success(data.message);
       }
-    }catch(err){
-      toast.error(err.message)
-    }finally{
-      setDeleteLoading(false)
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
   return (
     <section className="p-6 w-full min-h-screen font-[Montserrat] ">
       <div className="w-full flex items-center justify-between py-2 border-b border-border">
-        <Toaster/>
+        <Toaster />
         <h1 className="text-xl text-text font-bold">Workspace</h1>
         <button
-          onClick={() => setWorkspaceModel(true)}
+          onClick={() => {
+            setWorkspaceModel(true);
+            setMode("create");
+            setSelectedWorkspace(null);
+          }}
           className="px-4 py-2 bg-accent text-white rounded-lg font-medium text-lg cursor-pointer opacity-90 hover:opacity-100"
         >
           + Create Workspace
         </button>
         <WorkspaceModel
+          mode={mode}
+          initialData={selectedWorkspace}
           isOpen={workspaceModel}
           onClose={() => setWorkspaceModel(false)}
         />
@@ -137,18 +152,47 @@ function WorkspaceManagement() {
                           >
                             View Workspace
                           </button>
-                          <button className="w-full cursor-pointer text-left px-4 py-2 hover:bg-bg-soft">
+                          <button
+                            onClick={() => setTaskModel(true)}
+                            className="w-full cursor-pointer text-left px-4 py-2 hover:bg-bg-soft"
+                          >
                             Add Task
                           </button>
-                          <button className="w-full cursor-pointer text-left px-4 py-2 hover:bg-bg-soft">
+                          <TaskModel
+                            isOpen={taskModel}
+                            onClose={() => setTaskModel(false)}
+                            id={item._id}
+                          />
+                          <button
+                            onClick={() => {
+                              setWorkspaceModel(true);
+                              setMode("edit");
+                              setSelectedWorkspace(item);
+                            }}
+                            className="w-full cursor-pointer text-left px-4 py-2 hover:bg-bg-soft"
+                          >
                             Edit workspace
                           </button>
-                          <button className="w-full cursor-pointer text-left px-4 py-2 hover:bg-bg-soft">
+
+                          <button
+                            onClick={() => setMemberModel(true)}
+                            className="w-full cursor-pointer text-left px-4 py-2 hover:bg-bg-soft"
+                          >
                             Add Member
                           </button>
+                          <MemberModel
+                            isOpen={memberModel}
+                            setMemberModel={setMemberModel}
+                            id={item._id}
+                          />
 
-                          <button onClick={()=>{handleDelet(item._id)}} className="w-full cursor-pointer text-red-700 text-left px-4 py-2 hover:bg-bg-soft">
-                          {deleteLoading ? <Loader/>:'delete Workspace'}
+                          <button
+                            onClick={() => {
+                              handleDelet(item._id);
+                            }}
+                            className="w-full cursor-pointer text-red-700 text-left px-4 py-2 hover:bg-bg-soft"
+                          >
+                            {deleteLoading ? <Loader /> : "delete Workspace"}
                           </button>
                         </div>
                       )}

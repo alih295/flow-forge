@@ -1,6 +1,6 @@
 import api from "../Api/Api";
 
-export const createWorkspace = async (workspaceData) => {
+export const createWorkspace = async ({workspaceData}) => {
   try {
     const response = await api.post("/workspace/create", workspaceData);
     const data = response.data;
@@ -73,6 +73,19 @@ export const deleteWorkspace = async (id) => {
   } catch (err) {
     const error = err.response.data.message;
     console.error("workspace delete api error is ", err.message);
+    throw new Error(error);
+  }
+};
+
+export const updateWorkspace = async ({workspaceData, id}) => {
+  try {
+    console.log(workspaceData , id)
+    const response = await api.patch(`/workspace/update/${id}` , workspaceData)
+    const data = response.data
+    return data
+  } catch (err) {
+    const error = err.response.data.message;
+    console.error("update workspace api error is", err.message);
     throw new Error(error);
   }
 };

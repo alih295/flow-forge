@@ -1,15 +1,25 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { X } from "lucide-react";
-import { createWorkspace } from "../services/WorkspaceServices";
+import {
+  createWorkspace,
+  updateWorkspace,
+} from "../services/WorkspaceServices";
 import toast, { Toaster } from "react-hot-toast";
 import Loader from "./Loader";
 import { AdminDashboardContext } from "../Context/AdminDashboardContext";
 
-function WorkspaceModel({ isOpen, onClose }) {
+function WorkspaceModel({ isOpen, onClose, mode, initialData }) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
-  const { fetchDashboard } = useContext(AdminDashboardContext);
+  const { fetchDashboard, dashboardData } = useContext(AdminDashboardContext);
+
+  useEffect(() => {
+    if (isOpen) {
+      setName(initialData?.name || "");
+      setDescription(initialData?.description || "");
+    }
+  }, [isOpen, initialData]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -19,16 +29,25 @@ function WorkspaceModel({ isOpen, onClose }) {
         name: name,
         description: description,
       };
-      const response = await createWorkspace(workspaceData);
+      const response =
+        mode === "edit"
+          ? await updateWorkspace({id:initialData._id, workspaceData})
+          : await createWorkspace({workspaceData});
       if (response?.success || response?.data?.success) {
-        toast.success("Workspace created successfully");
+        toast.success(
+          mode === "create"
+            ? "Workspace created successfully"
+            : "workspace updated successfuly",
+        );
 
-        if (fetchDashboard) {
+        if (dashboardData && fetchDashboard) {
           await fetchDashboard(true);
         }
+        if (mode === "create") {
+          setName("");
+          setDescription("");
+        }
 
-        setName("");
-        setDescription("");
         onClose();
       }
     } catch (err) {
@@ -52,7 +71,9 @@ function WorkspaceModel({ isOpen, onClose }) {
         className={`absolute -translate-x-1/2 p-5 top-1/2 left-1/2 h-100 w-100 max-w-[90%] bg-white rounded-xl shadow-xl transition-transform duration-300 ${isOpen ? "-translate-y-1/2" : "translate-y-full"}`}
       >
         <div className="w-full border-b border-border p-2 flex items-center justify-between ">
-          <h1 className="text-xl text-text font-medium">Create Workspace</h1>
+          <h1 className="text-xl text-text font-medium">
+            {mode === "edit" ? "update" : "create"} Workspace
+          </h1>
           <span onClick={onClose} className="text-xl text-muted">
             <X />
           </span>
@@ -82,7 +103,7 @@ function WorkspaceModel({ isOpen, onClose }) {
             />
           </div>
           <button className="w-full py-1.5 bg-accent text-white font-semibold rounded-xl mt-5 text-lg ">
-            {loading ? <Loader /> : "create"}
+            {loading ? <Loader /> : mode === "edit" ? "update" : "create"}
           </button>
         </form>
       </div>
