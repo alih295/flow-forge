@@ -11,7 +11,7 @@ const { initSocket } = require("./src/socket/socket");
 
 const server = http.createServer(app);
 const io = initSocket(server);
-io.use(socketAuth)
+io.use(socketAuth);
 
 io.on("connection", (socket) => {
   console.log("user is conenected", socket.user._id);

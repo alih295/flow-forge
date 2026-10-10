@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { EllipsisVertical } from "lucide-react";
+import { EllipsisVertical, Import } from "lucide-react";
 import { fetchUser } from "../../services/UserService";
 import Loader from "../../components/Loader";
+  import {useNavigate} from 'react-router-dom'
+import RoleandStatus from "../../components/RoleandStatus";
 
 function UsersManagement() {
   const [loading, setLoading] = useState(false);
@@ -10,6 +12,8 @@ function UsersManagement() {
   const limit = 10;
   const [totalPages, setTotalPages] = useState(1);
   const [openMenu, setOpenMenu] = useState(false);
+  const [openRoleModel, setOpenRoleModel] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const getUsers = async () => {
@@ -92,12 +96,13 @@ function UsersManagement() {
                       </button>
                       {openMenu === item._id && (
                         <div className="absolute z-20 w-40 bg-white border border-border rounded-lg shadow-lg  right-2 top-10">
-                          <button className="w-full text-left px-4 py-2 hover:bg-bg-soft">
+                          <button onClick={()=>navigate(`/admin/user/${item._id}`)}  className="w-full text-left px-4 py-2 hover:bg-bg-soft cursor-pointer">
                             View User
                           </button>
-                          <button className="w-full text-left px-4 py-2 hover:bg-bg-soft">
-                            Change Role
+                          <button onClick={()=>setOpenRoleModel(true)} className="w-full text-left px-4 py-2 hover:bg-bg-soft cursor-pointer">
+                            Change Role & Status
                           </button>
+                          <RoleandStatus id={item._id} isOpen={openRoleModel} onClose={()=>setOpenRoleModel(false)} />
                           <button className="w-full text-left px-4 py-2 hover:bg-bg-soft">
                             {item.status === "blocked"
                               ? "UnBlock user"

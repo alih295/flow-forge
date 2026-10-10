@@ -15,6 +15,7 @@ import UserLayout from "../Layouts/UserLayout";
 import UsersManagement from "../pages/admin/UsersManagement";
 import WorkspaceManagement from "../pages/admin/WorkspaceManagement";
 import ViewWorkspace from "../pages/admin/ViewWorkspace";
+import ViewUser from "../pages/admin/ViewUser";
 
 function AppRoutes() {
   return (
@@ -38,8 +39,7 @@ function AppRoutes() {
           <Route path="users" element={<UsersManagement />} />
           <Route path="workspaces" element={<WorkspaceManagement />} />
           <Route path="workspace/view/:id" element={<ViewWorkspace />} />
-
-
+          <Route path="user/:id" element={<ViewUser />} />
         </Route>
 
         {/* manager Routes aare called here */}
