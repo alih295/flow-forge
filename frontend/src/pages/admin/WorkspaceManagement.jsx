@@ -40,7 +40,7 @@ function WorkspaceManagement() {
       }
     };
     getWorkspace();
-  }, [page, deleteLoading]);
+  }, [page, deleteLoading, taskModel, memberModel]);
   const navigate = useNavigate();
   const handleDelet = async (id) => {
     try {
@@ -133,7 +133,7 @@ function WorkspaceManagement() {
                     <td className="px-4 py-3.5 border border-border ">
                       {item.status}
                     </td>
-                    <td className="p-2 border  border-border relative ">
+                    <td className="p-2 border  border-border relative  ">
                       <button
                         onClick={() =>
                           setOpenMenu(openMenu === item._id ? null : item._id)
@@ -143,7 +143,7 @@ function WorkspaceManagement() {
                         <EllipsisVertical size={18} />
                       </button>
                       {openMenu === item._id && (
-                        <div className="absolute z-20 w-64 bg-white border border-border rounded-lg shadow-lg  right-2 top-10">
+                        <div className="absolute z-20 w-64 bg-white border border-border rounded-lg shadow-lg  overflow-auto max-h-25 right-2 top-10">
                           <button
                             onClick={() =>
                               navigate(`/admin/workspace/view/${item._id}`)

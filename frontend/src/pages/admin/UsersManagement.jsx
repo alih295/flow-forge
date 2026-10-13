@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { EllipsisVertical, Import } from "lucide-react";
-import { fetchUser } from "../../services/UserService";
+import { deleteUser, fetchUser } from "../../services/UserService";
 import Loader from "../../components/Loader";
-  import {useNavigate} from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 import RoleandStatus from "../../components/RoleandStatus";
+import toast,{ Toaster } from "react-hot-toast";
 
 function UsersManagement() {
   const [loading, setLoading] = useState(false);
@@ -12,8 +13,9 @@ function UsersManagement() {
   const limit = 10;
   const [totalPages, setTotalPages] = useState(1);
   const [openMenu, setOpenMenu] = useState(false);
-  const [openRoleModel, setOpenRoleModel] = useState(false)
-  const navigate = useNavigate()
+  const [openRoleModel, setOpenRoleModel] = useState(false);
+  const navigate = useNavigate();
+  const [delLoading, setDelLoading] = useState(false);
 
   useEffect(() => {
     const getUsers = async () => {
@@ -29,13 +31,27 @@ function UsersManagement() {
       }
     };
     getUsers();
-  }, [page]);
+  }, [page, delLoading]);
+
+  const handleDelete = async (id) => {
+    try {
+      setDelLoading(true);
+      const response = await deleteUser(id);
+      if (response.success) {
+        toast.success("user deleted successfully");
+      }
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setDelLoading(false);
+    }
+  };
 
   return (
     <section className="w-full min-h-screen p-6  font-[Montserrat]">
+      <Toaster/>
       <div className="w-full flex items-center justify-between py-2 border-b border-border">
         <h1 className="text-xl text-text font-bold">Users</h1>{" "}
-        
       </div>
       <div className="w-full py-2 mt-5 flex items-center justify-between">
         <input
@@ -96,19 +112,27 @@ function UsersManagement() {
                       </button>
                       {openMenu === item._id && (
                         <div className="absolute z-20 w-40 bg-white border border-border rounded-lg shadow-lg  right-2 top-10">
-                          <button onClick={()=>navigate(`/admin/user/${item._id}`)}  className="w-full text-left px-4 py-2 hover:bg-bg-soft cursor-pointer">
+                          <button
+                            onClick={() => navigate(`/admin/user/${item._id}`)}
+                            className="w-full text-left px-4 py-2 hover:bg-bg-soft cursor-pointer"
+                          >
                             View User
                           </button>
-                          <button onClick={()=>setOpenRoleModel(true)} className="w-full text-left px-4 py-2 hover:bg-bg-soft cursor-pointer">
+                          <button
+                            onClick={() => setOpenRoleModel(true)}
+                            className="w-full text-left px-4 py-2 hover:bg-bg-soft cursor-pointer"
+                          >
                             Change Role & Status
                           </button>
-                          <RoleandStatus id={item._id} isOpen={openRoleModel} onClose={()=>setOpenRoleModel(false)} />
-                          <button className="w-full text-left px-4 py-2 hover:bg-bg-soft">
-                            {item.status === "blocked"
-                              ? "UnBlock user"
-                              : "block User"}
-                          </button>
-                          <button className="w-full text-red-700 text-left px-4 py-2 hover:bg-bg-soft">
+                          <RoleandStatus
+                            id={item._id}
+                            isOpen={openRoleModel}
+                            onClose={() => setOpenRoleModel(false)}
+                          />
+                          <button
+                            onClick={() => handleDelete(item._id)}
+                            className="w-full text-red-700 text-left px-4 py-2 cursor-pointer hover:bg-bg-soft"
+                          >
                             Delete User
                           </button>
                         </div>

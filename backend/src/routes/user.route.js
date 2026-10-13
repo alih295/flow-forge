@@ -21,7 +21,7 @@ router.get(
 router.patch(
   "/update-user-status-and-role/:id",
   authUser,
-  authorizeRole("manager", "admin"),
+  authorizeRole('admin'),
   [
     param("id").isMongoId().withMessage("invalid userId format"),
     body("role")

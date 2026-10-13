@@ -10,6 +10,7 @@ function Signup() {
   const [image, setimage] = useState(null);
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate();
+  const [verificationEmail, setVerificationEmail] = useState('')
 
   const handleSubmit = async (e) => {
   e.preventDefault();
@@ -31,8 +32,7 @@ function Signup() {
     setLoading(false)
     
     if (data?.success || data) {
-      
-      navigate("/verify-otp"); 
+      navigate("/verify-otp" , {state:{email},}); 
     }
 
   } catch (error) {

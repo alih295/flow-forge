@@ -208,7 +208,7 @@ const updateWorkspace = async (req, res, next) => {
     await createNotification({
       senderId: req.user._id,
       recipientId: updateWorkspace.owner,
-      type: "update_wprkspace",
+      type: "update_workspace",
       title: "update details of workspace",
       message: "update details of workspace",
       entityType: "workspace",

@@ -70,8 +70,6 @@ const updateUserStatusAndRole = async (req, res, next) => {
       user.status = status;
     }
     await user.save();
-    await user.save();
-
     await createActivityLog({
       userId: req.user._id,
       action: role ? "user_role_changed" : "user_status_changed",

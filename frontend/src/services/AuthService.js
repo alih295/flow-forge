@@ -43,3 +43,14 @@ export const getUserProfile = async () => {
     throw new Error(error)
   }
 };
+
+export const verifyOtp = async(data)=>{
+  try{
+    const response = await api.post('/verify-otp' , data)
+    const data = response.data
+  }catch(err){
+    const error = err.response.data.message
+    console.error('verificction failed')
+    throw new Error(error)
+  }
+}

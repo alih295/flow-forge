@@ -19,7 +19,7 @@ const activityLogSchema = new mongoose.Schema(
     },
     entityType: {
       type: String,
-      enum: ["workspace", "task", "member" , "comment"],
+      enum: ["workspace", "task", "member" , "comment" , 'user'],
       required: true,
     },
     entityId: {

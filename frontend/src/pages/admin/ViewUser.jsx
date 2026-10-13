@@ -6,15 +6,17 @@ import Loader from "../../components/Loader";
 
 function ViewUser() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState([]);
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
 
   useEffect(() => {
     const getSingleUser = async () => {
+      console.log('get route hitted')
       try {
         setLoading(true);
         const data = await fetchUserById(id);
+        console.log(data)
         setUser(data.user)
       } catch (err) {
         console.error(err.message);
@@ -25,7 +27,8 @@ function ViewUser() {
 
     getSingleUser()
 
-  }, [id]);
+  }, []);
+  console.log(user)
 
   if(loading){
     return <div className="w-full h-full flex items-center justify-center"><Loader/></div>
@@ -49,10 +52,10 @@ function ViewUser() {
             <p className="text-lg text-muted">{user?.email}</p>
             <p className=" flex items-center justify-center-safe gap-5">
               <span className="bg-green-500/50 p-1 px-2 rounded-full capitalize font-semibold text-green-800">
-                {user.status}
+                {user?.status}
               </span>{" "}
               <span className="text-blue-700 font-semibold capitalize p-1 px-2 rounded-full bg-blue-600/50">
-                {user.role}
+                {user?.role}
               </span>
             </p>
           </div>
@@ -69,17 +72,17 @@ function ViewUser() {
         <div className="w-full mt-5 flex items-center justify-start gap-70 ">
           <div>
             <p className="text-muted text-sm capitalize ">full name</p>
-            <h4 className="text-lg capitalize font-semibold">{user.name}</h4>
+            <h4 className="text-lg capitalize font-semibold">{user?.name}</h4>
 
             <p className="text-muted mt-5 text-sm capitalize ">email Address</p>
-            <h1 className="text-lg font-semibold">{user.email}</h1>
+            <h1 className="text-lg font-semibold">{user?.email}</h1>
           </div>
           <div>
             <p className="text-muted text-sm capitalize ">username</p>
-            <h4 className="text-lg font-semibold ">{user.name}</h4>
+            <h4 className="text-lg font-semibold ">{user?.name}</h4>
 
             <p className="text-muted text-sm capitalize mt-5">global Role</p>
-            <h1 className="text-lg font-semibold">{user.role}</h1>
+            <h1 className="text-lg font-semibold">{user?.role}</h1>
           </div>
         </div>
       </div>
@@ -90,7 +93,7 @@ function ViewUser() {
             <p className="text-muted ">Account status</p>{" "}
             <h6 className="text-lg font-medium">{user.status}</h6>
           </div>{" "}
-          <div className="px-4 p-1 bg-green-500/20 text-green-700 rounded-full font-semibold">
+          <div className={`px-4 p-1  ${user.isVerify ? 'bg-green-500/20' : 'bg-red-600/20 text-red-600'}  text-green-700 rounded-full font-semibold`}>
             {user.isVerify?'verify' : 'not verified'}
           </div>
         </div>
