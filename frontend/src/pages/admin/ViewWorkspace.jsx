@@ -28,7 +28,7 @@ function ViewWorkspace() {
       }
     };
     getWorkspaceById();
-  }, []);
+  }, [taskModel , memberModel]);
 
   return (
     <section className="w-full p-6 min-h-screen ">

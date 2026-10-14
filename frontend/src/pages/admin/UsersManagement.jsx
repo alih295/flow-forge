@@ -31,7 +31,7 @@ function UsersManagement() {
       }
     };
     getUsers();
-  }, [page, delLoading]);
+  }, [page]);
 
   const handleDelete = async (id) => {
     try {
@@ -41,6 +41,7 @@ function UsersManagement() {
         toast.success("user deleted successfully");
       }
     } catch (err) {
+      console.error(err.message)
       toast.error(err.message);
     } finally {
       setDelLoading(false);
@@ -49,7 +50,7 @@ function UsersManagement() {
 
   return (
     <section className="w-full min-h-screen p-6  font-[Montserrat]">
-      <Toaster/>
+      <Toaster></Toaster>
       <div className="w-full flex items-center justify-between py-2 border-b border-border">
         <h1 className="text-xl text-text font-bold">Users</h1>{" "}
       </div>

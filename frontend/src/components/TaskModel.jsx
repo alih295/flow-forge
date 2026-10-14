@@ -120,7 +120,7 @@ function TaskModel({ isOpen, onClose, id }) {
                       <option
                         className="w-full text-black"
                         key={idx}
-                        value={item.user._id}
+                        value={item?.user?._id}
                       >
                         {item.user?.name}
                       </option>

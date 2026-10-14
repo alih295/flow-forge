@@ -32,7 +32,7 @@ function Header({ user }) {
           <Bell onClick={() => setShowNotification(true)} />
 
           <NotificationDrawer notificationData={notificationData}
-            isOpen={showNotification}
+            isOpen={showNotification} notificationloading={notificationloading}
             onClose={() => setShowNotification(false)}
           />
         </div>

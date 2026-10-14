@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { verifyOtp } from "../services/AuthService";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import Loader from "../components/Loader";
+import toast,{Toaster} from 'react-hot-toast'
 
 function OtpVerification() {
   const [otp, setOtp] = useState("");
@@ -8,6 +10,7 @@ function OtpVerification() {
   const [isExpired, setIsExpired] = useState(false);
   const location = useLocation();
   const email = location.state?.email;
+  const [loading, setLoading] = useState(false)
 
   // Timer logic
   useEffect(() => {
@@ -29,17 +32,30 @@ function OtpVerification() {
     const seconds = timeLeft % 60;
     return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   };
-
+const navigate = useNavigate()
   const handleSubmit = async () => {
-    const data = {
-      email: email,
-      otp: otp,
-    };
-    const respone = await verifyOtp(data);
+    try{
+      setLoading(true)
+      const data = {
+        email:email,
+        otp:otp
+      }
+      const response = await verifyOtp(data)
+      if(response.success){
+        toast.success('email verffiy successfull')
+        navigate('/login')
+      }
+    }catch(err){
+      toast.error(err.message)
+      navigate('/signup')
+    }finally{
+      setLoading(false)
+    }
   };
 
   return (
     <section className="w-full h-screen flex items-center justify-center bg-(--bg-primary)">
+      <Toaster></Toaster>
       <div className="w-full  max-w-md flex flex-col gap-5 border rounded-xl p-6 border-(--border-acent) bg-white shadow-sm">
         <div className="flex justify-between items-center">
           <h1 className="text-xl font-bold text-(--text-primary)">
@@ -74,9 +90,9 @@ function OtpVerification() {
 
         <button
           onClick={handleSubmit}
-          className="w-full py-2.5 rounded-lg text-(--text-light) bg-(--btn-primary-bg) hover:bg-(--btn-primary-hover) cursor-pointer font-semibold text-base transition-all"
+          className="w-full py-2.5 rounded-lg text-white font-medium bg-accent  cursor-pointer text-base transition-all"
         >
-          Submit
+          {loading ? <Loader/> : 'submit'}
         </button>
       </div>
     </section>

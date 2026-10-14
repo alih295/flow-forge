@@ -55,6 +55,7 @@ function WorkspaceManagement() {
       setDeleteLoading(false);
     }
   };
+  console.log(workspace)
 
   return (
     <section className="p-6 w-full min-h-screen font-[Montserrat] ">
@@ -125,7 +126,7 @@ function WorkspaceManagement() {
                       {item.name}
                     </td>
                     <td className="px-4 py-3.5 border border-border ">
-                      {item.owner.name}
+                      {item.owner?.name}
                     </td>
                     <td className="px-4 py-3.5 border border-border ">
                       {item.members}
@@ -161,7 +162,7 @@ function WorkspaceManagement() {
                           <TaskModel
                             isOpen={taskModel}
                             onClose={() => setTaskModel(false)}
-                            id={item._id}
+                            id={item?._id}
                           />
                           <button
                             onClick={() => {

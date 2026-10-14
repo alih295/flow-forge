@@ -75,7 +75,7 @@ const addWorkspaceMembers = async (req, res, next) => {
       type: "member_added",
       message: "add member to this workspace ",
       entityType: "workspace member",
-      entityId: addMembers,
+      entityId: addMembers._id,
     });
 
     return res.status(200).json({ succes: true, member: addMembers });

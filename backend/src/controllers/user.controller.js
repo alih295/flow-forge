@@ -84,7 +84,14 @@ const updateUserStatusAndRole = async (req, res, next) => {
 const deleteUser = async (req, res, next) => {
   try {
     const { id } = req.params;
-    await userModel.findByIdAndDelete(id);
+    const user = await userModel.findById(id);
+    if (user.role === "admin") {
+      const err = new Error("you can't delete this user");
+      err.statusCode = 400;
+      return next(err);
+    }
+    await userModel.findOneAndDelete(user._id);
+
     await createActivityLog({
       userId: req.user._id,
       action: "user is deletd",

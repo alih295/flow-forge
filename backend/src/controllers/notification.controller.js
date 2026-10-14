@@ -17,6 +17,7 @@ const getNotification = async (req, res, next) => {
         .sort({ createdAt: -1 })
         .populate("sender", "name email profile");
     }
+    console.log(notification)
 
     return res.status(200).json({ success: true, notification });
   } catch (err) {
