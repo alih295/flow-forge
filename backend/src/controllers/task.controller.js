@@ -265,11 +265,44 @@ const getWorkspaceMember = async (req, res, next) => {
   }
 };
 
+const getAllTasks = async (req, res, next) => {
+  try {
+    const isAdmin = req.user.role === "admin";
+
+    if (!isAdmin) {
+      const err = new Error("you can not access this route");
+      err.statusCode = 403;
+      return next(err);
+    }
+    const [tasks, completedTask, inProgressTask, todoTask, totalTask] =
+      await Promise.all([
+        taskModel.find({})
+          .populate("workspace")
+          .populate("assignedTo", "name"),
+        
+        taskModel.countDocuments({
+          status: "completed",
+        }),
+        taskModel.countDocuments({
+          status: "in-progress",
+        }),
+        taskModel.countDocuments({
+          status: "todo",
+        }),
+        taskModel.countDocuments(),
+      ]);
+      return res.status(200).json({success:true , tasks,totalTask , completedTask,inProgressTask,todoTask})
+  } catch (err) {
+    return next(err);
+  }
+};
+
 module.exports = {
   createTask,
   getTasks,
   updateTaskDetails,
   updateTaskStatus,
   deleteTask,
-  getWorkspaceMember
+  getWorkspaceMember,
+  getAllTasks
 };

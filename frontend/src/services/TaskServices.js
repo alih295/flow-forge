@@ -22,3 +22,15 @@ export const fetchWorkspaceMember = async (id) => {
     throw new Error(error);
   }
 };
+
+export const fetchTasks = async () => {
+  try {
+    const response = await api.get("/workspace/tasks");
+    const data = response.data;
+    return data;
+  } catch (err) {
+    const error = err.response.data.message;
+    console.error("fetch tasks api error is", err.message);
+    throw new Error(error);
+  }
+};
