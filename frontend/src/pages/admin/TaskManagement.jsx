@@ -6,7 +6,6 @@ import {
   CircleCheck,
   Funnel,
   Search,
- 
 } from "lucide-react";
 import TaskList from "../../components/TaskList";
 import KanbanBoard from "../../components/KanbanBoard";
@@ -14,35 +13,33 @@ import { fetchTasks } from "../../services/TaskServices";
 
 function TaskManagement() {
   const [taskView, setTaskView] = useState("list");
-  const [loading,setLoading] = useState(false)
-  const [tasks, setTasks] = useState([])
-  const [totalTask, setTotalTask] = useState(0)
-  const [completedTasK, setCompletedTask] = useState(0)
-  const [todoTask, setTodoTask] = useState(0)
-  const [inProgressTask, setInProgressTask] = useState(0)
+  const [loading, setLoading] = useState(false);
+  const [tasks, setTasks] = useState([]);
+  const [totalTask, setTotalTask] = useState(0);
+  const [completedTasK, setCompletedTask] = useState(0);
+  const [todoTask, setTodoTask] = useState(0);
+  const [inProgressTask, setInProgressTask] = useState(0);
   useEffect(() => {
-    const getTasks = async ()=>{
-      try{
-        setLoading(true)
-        const data = await fetchTasks()
-        if(data.success){
-          console.log(data)
-          setTasks(data.tasks)
-          setTotalTask(data.totalTask)
-          setCompletedTask(data.completedTask)
-          setTodoTask(data.todoTask)
-          setInProgressTask(data.inProgressTask)
+    const getTasks = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchTasks();
+        if (data.success) {
+          console.log(data);
+          setTasks(data.tasks);
+          setTotalTask(data.totalTask);
+          setCompletedTask(data.completedTask);
+          setTodoTask(data.todoTask);
+          setInProgressTask(data.inProgressTask);
         }
-      }catch(err){
-        console.error(err.message)
-      }finally{
-        setLoading(false)
+      } catch (err) {
+        console.error(err.message);
+      } finally {
+        setLoading(false);
       }
-    } 
-    getTasks()
-  
-  }, [])
-  
+    };
+    getTasks();
+  }, []);
 
   return (
     <div className="w-full bg-bg-soft min-h-screen p-6 font-[Montserrat]">
@@ -120,8 +117,11 @@ function TaskManagement() {
           className="w-full border  rounded-xl  border-border mt-10 p-2
         "
         >
-         {taskView === 'list' ? <TaskList data={tasks} /> : <KanbanBoard data={tasks}/>}
-          
+          {taskView === "list" ? (
+            <TaskList data={tasks} />
+          ) : (
+            <KanbanBoard data={tasks} />
+          )}
         </div>
       </div>
     </div>
