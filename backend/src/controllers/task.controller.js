@@ -1,3 +1,4 @@
+const commentModel = require("../models/comment.model");
 const taskModel = require("../models/Task.model");
 const userModel = require("../models/user.model");
 const workspaceMemberModel = require("../models/workspace.member.model");
@@ -276,10 +277,8 @@ const getAllTasks = async (req, res, next) => {
     }
     const [tasks, completedTask, inProgressTask, todoTask, totalTask] =
       await Promise.all([
-        taskModel.find({})
-          .populate("workspace")
-          .populate("assignedTo", "name"),
-        
+        taskModel.find({}).populate("workspace").populate("assignedTo", "name"),
+
         taskModel.countDocuments({
           status: "completed",
         }),
@@ -291,7 +290,47 @@ const getAllTasks = async (req, res, next) => {
         }),
         taskModel.countDocuments(),
       ]);
-      return res.status(200).json({success:true , tasks,totalTask , completedTask,inProgressTask,todoTask})
+    return res.status(200).json({
+      success: true,
+      tasks,
+      totalTask,
+      completedTask,
+      inProgressTask,
+      todoTask,
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+const getTaskById = async (req, res, next) => {
+  try {
+    const { taskId } = req.params;
+    const task = await taskModel
+      .findById(taskId)
+      .populate("workspace", "name")
+      .populate("assignedTo", "name profile email role ")
+      .populate("createdBy", "name role email profile");
+    const isAdmin = req.user.role === "admin";
+
+    const isAssignedUser =
+      req.user._id.toString() === task.assignedTo.toString();
+    const memberShip = await workspaceMemberModel.findOne({
+      workspace: task.workspace,
+      user: req.user._id,
+      status: "active",
+    });
+    const hasWorkspaceAccess = Boolean(memberShip);
+    if (!isAdmin && !isAssignedUser && !hasWorkspaceAccess) {
+      const err = new Error("you don't have access to this");
+      err.statusCode = 403;
+      return next(err);
+    }
+    const comment = await commentModel.find({
+      task: task._id,
+      workspace: task.workspace,
+    });
+    return res.status(200).json({ success: true, task, comment });
   } catch (err) {
     return next(err);
   }
@@ -304,5 +343,6 @@ module.exports = {
   updateTaskStatus,
   deleteTask,
   getWorkspaceMember,
-  getAllTasks
+  getAllTasks,
+  getTaskById
 };

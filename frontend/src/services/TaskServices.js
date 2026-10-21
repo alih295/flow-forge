@@ -34,3 +34,16 @@ export const fetchTasks = async () => {
     throw new Error(error);
   }
 };
+
+export const fetchTaskById = async(id)=>{
+  try{
+    const response = await api.get(`/workspace/${id}`)
+    const data = response.data
+    return data
+
+  }catch(err){
+    const error = err.response.data.message
+    console.error(err.message)
+    throw new Error(error)
+  }
+}
