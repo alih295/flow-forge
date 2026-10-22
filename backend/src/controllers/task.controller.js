@@ -5,6 +5,7 @@ const workspaceMemberModel = require("../models/workspace.member.model");
 const createActivityLog = require("../services/activity.log.service");
 const createNotification = require("../services/notification.service");
 const { getIO } = require("../socket/socket");
+const activityLogModel = require('../models/activity.log.model')
 
 const createTask = async (req, res, next) => {
   try {
@@ -329,8 +330,9 @@ const getTaskById = async (req, res, next) => {
     const comment = await commentModel.find({
       task: task._id,
       workspace: task.workspace,
-    });
-    return res.status(200).json({ success: true, task, comment });
+    }).populate('user' , 'name profile email');
+    const taskActivity = await activityLogModel.find({entityId:task._id})
+    return res.status(200).json({ success: true, task, comment,taskActivity });
   } catch (err) {
     return next(err);
   }

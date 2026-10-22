@@ -1,6 +1,7 @@
 const commentModel = require("../models/comment.model");
 const createActivityLog = require("../services/activity.log.service");
 const taskModel = require("../models/Task.model");
+const activityLogModel = require("../models/activity.log.model");
 
 const createComment = async (req, res, next) => {
   try {
@@ -63,6 +64,8 @@ const getComments = async (req, res, next) => {
       .sort({ createdAt: -1 })
       .populate("user", "name email profile");
 
+   
+
     return res.status(200).json({ success: true, comments });
   } catch (err) {
     return next(err);
@@ -118,7 +121,7 @@ const updateComment = async (req, res, next) => {
       err.statusCode = 404;
       return next(err);
     }
-    const isGlobalAdmin = req.user.role === 'admin';
+    const isGlobalAdmin = req.user.role === "admin";
     const isCommentOwner = comment.user.toString() === req.user._id.toString();
 
     if (!isGlobalAdmin && !isCommentOwner) {

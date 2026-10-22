@@ -7,7 +7,6 @@ function NotificationDrawer({
   notificationData,
   notificationloading,
 }) {
-  console.log(notificationData);
   return (
     <div
       className={`fixed inset-0 z-50 transition-all  duration-300 ${
