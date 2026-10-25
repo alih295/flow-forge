@@ -10,6 +10,7 @@ import {
 import TaskList from "../../components/TaskList";
 import KanbanBoard from "../../components/KanbanBoard";
 import { fetchTasks } from "../../services/TaskServices";
+import TaskModel from "../../components/TaskModel";
 
 function TaskManagement() {
   const [taskView, setTaskView] = useState("list");
@@ -19,13 +20,13 @@ function TaskManagement() {
   const [completedTasK, setCompletedTask] = useState(0);
   const [todoTask, setTodoTask] = useState(0);
   const [inProgressTask, setInProgressTask] = useState(0);
+  const [childRender, setChildRender] = useState(0)
   useEffect(() => {
     const getTasks = async () => {
       try {
         setLoading(true);
         const data = await fetchTasks();
         if (data.success) {
-          console.log(data);
           setTasks(data.tasks);
           setTotalTask(data.totalTask);
           setCompletedTask(data.completedTask);
@@ -39,7 +40,8 @@ function TaskManagement() {
       }
     };
     getTasks();
-  }, []);
+  }, [ childRender ]);
+
 
   return (
     <div className="w-full bg-bg-soft min-h-screen p-6 font-[Montserrat]">
@@ -48,9 +50,7 @@ function TaskManagement() {
           <h1 className="text-xl font-semibold mb-2 text-text">Tasks</h1>
           <p className="text-muted ">Manage and track your workspace tasks</p>
         </div>
-        <button className="bg-accent px-6 py-2 text-white font-medium rounded-lg cursor-pointer">
-          Create Task
-        </button>
+        
       </div>
       <div className="w-full flex mt-10 items-center justify-between  flex-wrap  border border-border rounded-xl gap-2 p-4 ">
         <div className="bg-white rounded-lg p-2 flex flex-col items-start justify-between  w-[49%] gap-2 px-4 ">
@@ -118,7 +118,7 @@ function TaskManagement() {
         "
         >
           {taskView === "list" ? (
-            <TaskList data={tasks} />
+            <TaskList data={tasks} setChildRender={setChildRender}  />
           ) : (
             <KanbanBoard data={tasks} />
           )}

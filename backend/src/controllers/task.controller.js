@@ -136,9 +136,10 @@ const updateTaskDetails = async (req, res, next) => {
       task.assignedTo = assignedTo;
       await createNotification({
         senderId: req.user._id,
+        workspace:task.workspace._id,
         recipientId: assignedTo,
         workspaceId: req.workspace._id,
-        type: "update-task-details",
+        type: "update_task_details",
         title: "update user ",
         message: "update user of a workspace like add new or previous user",
         entityType: "task",

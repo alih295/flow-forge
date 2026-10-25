@@ -55,7 +55,7 @@ function WorkspaceManagement() {
       setDeleteLoading(false);
     }
   };
-  console.log(workspace)
+  
 
   return (
     <section className="p-6 w-full min-h-screen font-[Montserrat] ">
@@ -154,7 +154,7 @@ function WorkspaceManagement() {
                             View Workspace
                           </button>
                           <button
-                            onClick={() => setTaskModel(true)}
+                            onClick={() => {  setTaskModel(true)}}
                             className="w-full cursor-pointer text-left px-4 py-2 hover:bg-bg-soft"
                           >
                             Add Task
@@ -162,7 +162,7 @@ function WorkspaceManagement() {
                           <TaskModel
                             isOpen={taskModel}
                             onClose={() => setTaskModel(false)}
-                            id={item?._id}
+                            workspaceId={item?._id}
                           />
                           <button
                             onClick={() => {

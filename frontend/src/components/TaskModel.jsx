@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import { createTask, fetchWorkspaceMember } from "../services/TaskServices";
+import { createTask, fetchWorkspaceMember, updateTask } from "../services/TaskServices";
 import toast, { Toaster } from "react-hot-toast";
 import Loader from "./Loader";
 
-function TaskModel({ isOpen, onClose, id }) {
+function TaskModel({ isOpen, onClose, taskId, mode, workspaceId }) {
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -13,12 +13,12 @@ function TaskModel({ isOpen, onClose, id }) {
   const [date, setDate] = useState(new Date());
   const [memberLoading, setMemberLoading] = useState(false);
   const [members, setMembers] = useState([]);
-
+  console.log(mode , taskId,workspaceId)
   useEffect(() => {
     const getWorkspaceMember = async () => {
       try {
         setMemberLoading(true);
-        const response = await fetchWorkspaceMember(id);
+        const response = await fetchWorkspaceMember(workspaceId);
         setMembers(response.members);
       } catch (err) {
         console.error(err.message);
@@ -28,6 +28,7 @@ function TaskModel({ isOpen, onClose, id }) {
     };
     getWorkspaceMember();
   }, []);
+
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -40,10 +41,10 @@ function TaskModel({ isOpen, onClose, id }) {
         priority,
         date,
       };
-      const data = await createTask(taskData, id);
-      if(data.success){
-        toast.success('task created Successfully')
-        onClose()
+      const data = mode === 'edit' ? await updateTask(workspaceId , taskId , taskData) : await createTask(taskData, workspaceId);
+      if (data.success) {
+        toast.success("task created Successfully");
+        onClose();
       }
     } catch (err) {
       console.error(err.message);
@@ -68,7 +69,7 @@ function TaskModel({ isOpen, onClose, id }) {
        left-1/2 ${isOpen ? "-translate-x-1/2 opacity-100" : "-translate-x-full opacity-0"} bg-white p-5 rounded-xl `}
       >
         <header className="w-full flex items-center justify-between py-2 border-b border-border">
-          <h1 className="text-lg font-medium text-text">Create Task</h1>{" "}
+          <h1 className="text-lg font-medium text-text">{ mode === 'edit' ? 'update' : 'Create Task'}</h1>{" "}
           <span onClick={onClose} className="cursor-pointer">
             <X size={18} />
           </span>
@@ -104,7 +105,7 @@ function TaskModel({ isOpen, onClose, id }) {
               <select
                 value={assignedTo}
                 onChange={(e) => setAssignedTo(e.target.value)}
-                required
+                
                 placeholder="Enter Title Here"
                 type="text"
                 className="w-full mt-2 px-4 py-2 border-gray-600 rounded-lg  outline-none border focus:border-primary"
@@ -160,7 +161,7 @@ function TaskModel({ isOpen, onClose, id }) {
               />
             </div>
             <button className="w-full py-2 bg-accent rounded-lg text-white font-medium cursor-pointer">
-              {loading ? <Loader /> : "create"}
+              {loading ? <Loader /> : mode === 'edit' ? 'update' : 'create'}
             </button>
           </form>
         </div>

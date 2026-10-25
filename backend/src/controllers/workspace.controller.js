@@ -5,6 +5,7 @@ const createActivityLog = require("../services/activity.log.service");
 const createNotification = require("../services/notification.service");
 const taskModel = require("../models/Task.model");
 const activityLogModel = require("../models/activity.log.model");
+const notificationModel = require("../models/notification.model");
 const createWorkspace = async (req, res, next) => {
   try {
     const userId = req.user._id;
@@ -253,6 +254,22 @@ const deleteWorkspace = async (req, res, next) => {
       err.statusCode = 404;
       return next(err);
     }
+    const tasks = await taskModel
+      .find({ workspace: workspaceId })
+      .select("_id");
+
+    const taskIds = tasks.map((task) => task._id);
+
+    if (taskIds.length > 0) {
+      await commentModel.deleteMany({ task: { $in: taskIds } });
+    }
+    await taskModel.deleteMany({ workspace: workspaceId });
+    await workspaceMemberModel.deleteMany({
+      workspace: workspaceId,
+    });
+    await activityLogModel.deleteMany({ workspace: workspaceId });
+    await notificationModel.deleteMany({ workspace: workspaceId });
+
     await workspaceModel.findByIdAndDelete(workspaceId);
     return res
       .status(200)

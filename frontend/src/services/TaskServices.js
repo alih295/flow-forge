@@ -11,9 +11,9 @@ export const createTask = async (taskData, id) => {
   }
 };
 
-export const fetchWorkspaceMember = async (id) => {
+export const fetchWorkspaceMember = async (workspaceId) => {
   try {
-    const response = await api.get(`/workspace/${id}/members`);
+    const response = await api.get(`/workspace/${workspaceId}/members`);
     const data = response.data;
     return data;
   } catch (err) {
@@ -35,15 +35,42 @@ export const fetchTasks = async () => {
   }
 };
 
-export const fetchTaskById = async(id)=>{
-  try{
-    const response = await api.get(`/workspace/${id}`)
-    const data = response.data
-    return data
-
-  }catch(err){
-    const error = err.response.data.message
-    console.error(err.message)
-    throw new Error(error)
+export const fetchTaskById = async (id) => {
+  try {
+    const response = await api.get(`/workspace/${id}`);
+    const data = response.data;
+    return data;
+  } catch (err) {
+    const error = err.response.data.message;
+    console.error(err.message);
+    throw new Error(error);
   }
-}
+};
+export const deleteTask = async (taskId, workspaceId) => {
+  try {
+    const response = await api.delete(
+      `/workspace/${workspaceId}/tasks/${taskId}`,
+    );
+    const data = response.data;
+    return data;
+  } catch (err) {
+    const error = err.response.data.message;
+    console.error("delet task api error is ", err.message);
+    throw new Error(error);
+  }
+};
+
+export const updateTask = async (workspaceId, taskId, taskData) => {
+  try {
+    const response = await api.patch(
+      `/workspace/${workspaceId}/tasks/${taskId}`,
+      taskData,
+    );
+    const data = response.data;
+    return data;
+  } catch (err) {
+    const error = err.response.data.message;
+    console.error("pdate task api error", err.message);
+    throw new Error(error);
+  }
+};

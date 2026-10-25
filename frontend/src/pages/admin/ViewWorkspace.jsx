@@ -79,7 +79,7 @@ function ViewWorkspace() {
               <Plus size={18} /> Add task
             </button>
             <TaskModel
-              id={id}
+              workspaceId={id}
               isOpen={taskModel}
               onClose={() => setTaskModel(false)}
             />

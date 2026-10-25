@@ -1,7 +1,7 @@
 import { BuildingComplex, Ellipsis, SquarePen, X, Send } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { fetchTaskById } from "../../services/TaskServices";
 import { createComment } from "../../services/commentServices";
 import { formatDistanceToNow } from "date-fns";
@@ -12,12 +12,13 @@ function ViewTask() {
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState("");
   const [taskActivity, setTaskActivity] = useState([]);
+  const [taskModel, setTaskModel] = useState(false);
+  const navigate = useNavigate();
   useEffect(() => {
     const getTaskById = async () => {
       try {
         const data = await fetchTaskById(id);
         if (data.success) {
-          console.log(data)
           setTask(data.task);
           setComments(data.comment);
           setTaskActivity(data.taskActivity);
@@ -29,7 +30,7 @@ function ViewTask() {
     };
 
     getTaskById();
-  }, [id, comment]);
+  }, [id, comment ]);
   const commentHandler = async () => {
     try {
       const data = { content: comment };
@@ -52,10 +53,12 @@ function ViewTask() {
       <header className="w-full flex items-center justify-between">
         <h4 className="text-lg">Task Details</h4>
         <span
+          onClick={() => navigate("/admin/tasks")}
           className="flex
          items-center justify-center gap-4 text-lg"
         >
-          <SquarePen size={18} /> <X size={18} />{" "}
+          <SquarePen className="hover:scale-105 cursor-pointer" size={18} />{" "}
+          <X className="hover:scale-110 cursor-pointer" size={18} />{" "}
         </span>
       </header>
       <Toaster></Toaster>
@@ -130,19 +133,25 @@ function ViewTask() {
               <p>this task don't have any activity yet</p>
             </div>
           ) : (
-          taskActivity.map((item,idx)=>{
-            return(  <div
-              className="flex
+            taskActivity.map((item, idx) => {
+              return (
+                <div
+                  key={item._id}
+                  className="flex
          items-start  gap-5 "
-            >
-              <BuildingComplex size={18} color="green" />{" "}
-              <span>
-                <p>{item.action}</p> <p>{formatDistanceToNow(new Date(item.createdAt), {
+                >
+                  <BuildingComplex size={18} color="green" />{" "}
+                  <span>
+                    <p>{item.action}</p>{" "}
+                    <p>
+                      {formatDistanceToNow(new Date(item.createdAt), {
                         addSuffix: true,
-                      })}</p>{" "}
-              </span>
-            </div>)
-          })
+                      })}
+                    </p>{" "}
+                  </span>
+                </div>
+              );
+            })
           )}
         </div>
       </div>
@@ -159,7 +168,10 @@ function ViewTask() {
         ) : (
           comments.map((item, idx) => {
             return (
-              <div className="w-full  flex my-5 items-start justify-start gap-5 ">
+              <div
+                key={item._id}
+                className="w-full  flex my-5 items-start justify-start gap-5 "
+              >
                 <div className=" ">
                   <img
                     className="w-10 h-10 rounded-full "
