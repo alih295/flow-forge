@@ -1,10 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import { createTask, fetchWorkspaceMember, updateTask } from "../services/TaskServices";
+import {
+  createTask,
+  fetchWorkspaceMember,
+  updateTask,
+} from "../services/TaskServices";
 import toast, { Toaster } from "react-hot-toast";
 import Loader from "./Loader";
 
-function TaskModel({ isOpen, onClose, taskId, mode, workspaceId }) {
+function TaskModel({
+  isOpen,
+  onClose,
+  taskId,
+  mode,
+  setChildRender,
+  workspaceId,initialData
+}) {
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -13,7 +24,21 @@ function TaskModel({ isOpen, onClose, taskId, mode, workspaceId }) {
   const [date, setDate] = useState(new Date());
   const [memberLoading, setMemberLoading] = useState(false);
   const [members, setMembers] = useState([]);
-  console.log(mode , taskId,workspaceId)
+
+
+  useEffect(() => {
+    if(isOpen){
+      setTitle(initialData.title  || '')
+      setDescription(initialData?.description || '')
+      setAssignedTo(initialData?.assignedTo || '')
+      setPriority(initialData?.priority || '')
+      setDate(initialData?.dueDate || '')
+    }
+  
+    
+  }, [isOpen , initialData , taskId])
+  
+
   useEffect(() => {
     const getWorkspaceMember = async () => {
       try {
@@ -27,8 +52,7 @@ function TaskModel({ isOpen, onClose, taskId, mode, workspaceId }) {
       }
     };
     getWorkspaceMember();
-  }, []);
-
+  }, [taskId, mode]);
 
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -41,9 +65,24 @@ function TaskModel({ isOpen, onClose, taskId, mode, workspaceId }) {
         priority,
         date,
       };
-      const data = mode === 'edit' ? await updateTask(workspaceId , taskId , taskData) : await createTask(taskData, workspaceId);
+      const data =
+        mode === "edit"
+          ? await updateTask(workspaceId, taskId, taskData)
+          : await createTask(taskData, workspaceId);
       if (data.success) {
-        toast.success("task created Successfully");
+        toast.success(
+          mode === "edit"
+            ? "task updated successfully"
+            : "task created  successfully",
+        );
+        if (mode !== "edit") {
+          setTitle("");
+          setDescription("");
+          setAssignedTo(null);
+          setPriority("");
+          setDate("");
+        }
+
         onClose();
       }
     } catch (err) {
@@ -51,12 +90,13 @@ function TaskModel({ isOpen, onClose, taskId, mode, workspaceId }) {
       toast.error(err.message);
     } finally {
       setLoading(false);
+      setChildRender(1);
     }
   };
 
   return (
     <div
-      className={`fixed inset-0 transition-all duration-300 z-50 ${isOpen ? "visible" : "invisible"}`}
+      className={`fixed  inset-0 transition-all duration-300 z-50 ${isOpen ? "visible" : "invisible"}`}
     >
       <Toaster />
       <div
@@ -65,11 +105,13 @@ function TaskModel({ isOpen, onClose, taskId, mode, workspaceId }) {
       />
 
       <div
-        className={`w-1/2 max-w-100 absolute transition-transform duration-300 top-1/2 -translate-y-1/2
+        className={`w-1/2 max-w-100 overflow-auto max-h-[90vh] absolute transition-transform duration-300 top-1/2 -translate-y-1/2
        left-1/2 ${isOpen ? "-translate-x-1/2 opacity-100" : "-translate-x-full opacity-0"} bg-white p-5 rounded-xl `}
       >
         <header className="w-full flex items-center justify-between py-2 border-b border-border">
-          <h1 className="text-lg font-medium text-text">{ mode === 'edit' ? 'update' : 'Create Task'}</h1>{" "}
+          <h1 className="text-lg font-medium text-text">
+            {mode === "edit" ? "update" : "Create Task"}
+          </h1>{" "}
           <span onClick={onClose} className="cursor-pointer">
             <X size={18} />
           </span>
@@ -105,7 +147,6 @@ function TaskModel({ isOpen, onClose, taskId, mode, workspaceId }) {
               <select
                 value={assignedTo}
                 onChange={(e) => setAssignedTo(e.target.value)}
-                
                 placeholder="Enter Title Here"
                 type="text"
                 className="w-full mt-2 px-4 py-2 border-gray-600 rounded-lg  outline-none border focus:border-primary"
@@ -161,7 +202,7 @@ function TaskModel({ isOpen, onClose, taskId, mode, workspaceId }) {
               />
             </div>
             <button className="w-full py-2 bg-accent rounded-lg text-white font-medium cursor-pointer">
-              {loading ? <Loader /> : mode === 'edit' ? 'update' : 'create'}
+              {loading ? <Loader /> : mode === "edit" ? "update" : "create"}
             </button>
           </form>
         </div>

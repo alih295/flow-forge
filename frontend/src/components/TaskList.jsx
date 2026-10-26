@@ -5,13 +5,15 @@ import { format } from "date-fns";
 import toast, { Toaster } from "react-hot-toast";
 import { deleteTask } from "../services/TaskServices";
 import TaskModel from "./TaskModel";
+import TaskStatusModel from "./TaskStatusModel";
 
-function TaskList({ data  , setChildRender }) {
+function TaskList({ data, setChildRender }) {
   const [showItem, setShowItem] = useState(null);
   const [loading, setLoading] = useState(false);
   const [taskModel, setTaskModel] = useState(false);
   const [taskId, setTaskId] = useState("");
   const [workspaceId, setWorkspaceId] = useState("");
+  const [taskStatusModel, settaskStatusModel] = useState(false);
 
   const handleDeleteTask = async (taskId, workspaceId) => {
     try {
@@ -24,7 +26,7 @@ function TaskList({ data  , setChildRender }) {
     } catch (err) {
       toast.error(err.message);
     } finally {
-      setChildRender(1)
+      setChildRender(1);
       setLoading(false);
     }
   };
@@ -58,7 +60,7 @@ function TaskList({ data  , setChildRender }) {
                 <span className="px-4 py-1 text-red-800 font-medium text-sm bg-red-600/20 rounded-full ">
                   {item.priority} priority
                 </span>{" "}
-                <span className="px-4 py-1 bg-gray-400 rounded-full text-white font-semibold ">
+                <span className={`px-4 py-1 ${item.status === 'todo' ? 'bg-red-600 text-white' : item.status === 'in-progress' ? 'bg-orange-600 text-white' :'bg-green-600 text-white' } rounded-full text-white font-semibold `}>
                   {item.status}
                 </span>
               </div>
@@ -73,12 +75,23 @@ function TaskList({ data  , setChildRender }) {
             </div>
             <div className="w-[5%] relative flex justify-end h-full">
               <TaskModel
-                  isOpen={taskModel}
-                  onClose={() => setTaskModel(false)}
-                  mode="edit"
-                  taskId={taskId}
-                  workspaceId={workspaceId}
-                />
+                isOpen={taskModel}
+                onClose={() => setTaskModel(false)}
+                mode="edit"
+                taskId={taskId}
+                workspaceId={workspaceId}
+                setChildRender={setChildRender}
+                initialData={item}
+              />
+
+              <TaskStatusModel
+                isOpen={taskStatusModel}
+                taskId={taskId}
+                workspaceId={workspaceId}
+                onClose={() => settaskStatusModel(false)}
+                setChildRender={setChildRender}
+              />
+
               <span
                 onClick={() => {
                   setShowItem(showItem === item._id ? null : item._id);
@@ -104,6 +117,16 @@ function TaskList({ data  , setChildRender }) {
                     >
                       edit task
                     </button>
+                    <button
+                      className="w-full text-left px-4 py-2 hover:bg-bg-soft cursor-pointer"
+                      onClick={() => {
+                        (setWorkspaceId(item.workspace._id),
+                          setTaskId(item._id),
+                          settaskStatusModel(true));
+                      }}
+                    >
+                      Update status
+                    </button>
 
                     <button
                       onClick={() => {
@@ -115,7 +138,6 @@ function TaskList({ data  , setChildRender }) {
                     </button>
                   </div>
                 )}
-                
               </span>
             </div>
           </div>

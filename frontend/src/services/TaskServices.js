@@ -74,3 +74,17 @@ export const updateTask = async (workspaceId, taskId, taskData) => {
     throw new Error(error);
   }
 };
+export const updateTaskStatus = async ({workspaceId ,taskId , taskStatus})=>{
+  try{
+    const response = await api.patch(`/workspace/${workspaceId}/tasks/${taskId}/status` , 
+      {status:taskStatus}
+    )
+
+    const data =  response.data
+    return data
+  }catch(err){
+    const error = err.response.data.message
+    console.error('update task status api error is ' , err.message)
+    throw new Error(error)
+  }
+}

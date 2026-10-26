@@ -205,14 +205,15 @@ const updateTaskStatus = async (req, res, next) => {
     });
     await createNotification({
       senderId: req.user._id,
-      recipientId: task.user,
+      recipientId: task.assignedTo,
       workspaceId: req.workspace._id,
-      type: "task_staus_changed",
+      type: "task_status_changed",
       title: "status changed",
       message: "update status of task",
       entityType: "task",
       entityId: task._id,
     });
+    
 
     return res.status(200).json({ success: true, task });
   } catch (err) {
