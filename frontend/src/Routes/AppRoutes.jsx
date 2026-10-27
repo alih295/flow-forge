@@ -18,6 +18,7 @@ import ViewWorkspace from "../pages/admin/ViewWorkspace";
 import ViewUser from "../pages/admin/ViewUser";
 import TaskManagement from "../pages/admin/TaskManagement";
 import ViewTask from "../pages/admin/ViewTask";
+import Notificaton from "../pages/admin/Notificaton";
 
 function AppRoutes() {
   return (
@@ -44,6 +45,7 @@ function AppRoutes() {
           <Route path="user/:id" element={<ViewUser />} />
           <Route  path="tasks"  element={<TaskManagement/>} />
           <Route  path="tasks/view/:id"  element={<ViewTask/>} />
+          <Route  path="notifications"   element={<Notificaton/>} />
         </Route>
 
         {/* manager Routes aare called here */}

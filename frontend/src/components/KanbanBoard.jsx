@@ -23,7 +23,10 @@ function KanbanBoard({ data }) {
 
 
   return (
-    <section className="w-full flex flex-col gap-10  rounded-2xl  p-4">
+    <section className="w-full flex flex-col gap-10 relative  rounded-2xl  p-4">
+      <div className="w-full h-full z-100 absolute top-0 flex items-center justify-center  bg-black/50 left-0">
+      <p className="text-xl font-medium text-white">comming soon</p>
+      </div>
       <div className="w-full    ">
         <div className=" w-full flex items-center justify-between gap-4">
           <div

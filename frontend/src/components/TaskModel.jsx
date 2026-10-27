@@ -28,7 +28,7 @@ function TaskModel({
 
   useEffect(() => {
     if(isOpen){
-      setTitle(initialData.title  || '')
+      setTitle(initialData?.title  || '')
       setDescription(initialData?.description || '')
       setAssignedTo(initialData?.assignedTo || '')
       setPriority(initialData?.priority || '')
