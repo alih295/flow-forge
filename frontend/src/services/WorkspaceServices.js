@@ -79,7 +79,6 @@ export const deleteWorkspace = async (id) => {
 
 export const updateWorkspace = async ({workspaceData, id}) => {
   try {
-    console.log(workspaceData , id)
     const response = await api.patch(`/workspace/update/${id}` , workspaceData)
     const data = response.data
     return data

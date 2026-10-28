@@ -2,24 +2,40 @@ const notificationModel = require("../models/notification.model");
 
 const getNotification = async (req, res, next) => {
   try {
-    let notification;
-    if (req.user.role === "admin") {
-      notification = await notificationModel
-        .find({})
-        .sort({ createdAt: -1 })
-        .limit(10)
-        .populate("sender", "name email profile");
-    } else {
-      notification = await notificationModel
-        .find({
-          recipient: req.user._id,
-        })
-        .sort({ createdAt: -1 })
-        .populate("sender", "name email profile");
+    let notifications;
+    let unReadNotification;
+    const page = Number(req.query.page) || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+    let filter = {};
+    if (req.user.role !== "admin") {
+      filter.recipient = req.user._id;
     }
-    
 
-    return res.status(200).json({ success: true, notification });
+    const [notification, totalNotification, unReadCount] = await Promise.all([
+      (notificationModel.find(filter))
+        .sort({ createdAli: -1 })
+        .populate("sender", "name email profile")
+        .populate("workspace", "name description")
+        .skip(skip)
+        .limit(limit),
+
+      notificationModel.countDocuments(filter),
+      notificationModel.countDocuments({
+        ...filter,
+        isRead: false,
+      }),
+    ]);
+    notifications = notification
+    unReadNotification = unReadCount
+    return res
+      .status(200)
+      .json({
+        success: true,
+        notifications,
+        unReadNotification,
+        totalPage: Math.ceil(totalNotification / limit),
+      });
   } catch (err) {
     return next(err);
   }

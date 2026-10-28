@@ -13,16 +13,7 @@ const notificationSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: [
-        "task_assigned",
-        "task_status_changed",
-        "member_added",
-        "member_removed",
-        "role_changed",
-        'update_task_details',
-        'create_workspace',
-        'update_workspace'
-      ],
+      enum: ["task", "user", "workspace"],
       required: true,
     },
     workspace: {
