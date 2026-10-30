@@ -4,6 +4,8 @@ import { useContext } from "react";
 import { NotificationContext } from "../../Context/NotificationContext";
 import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
+import { markAllAsRaed } from "../../services/NotificationService";
+import toast, { Toaster } from "react-hot-toast";
 
 function Notificaton() {
   const [page, setPage] = useState(1);
@@ -16,6 +18,18 @@ function Notificaton() {
     unReadNotification,
     totalPage,
   } = useContext(NotificationContext);
+
+  const markallasReadHandler = async () => {
+    try {
+      const data = await markAllAsRaed();
+      if (data.success) {
+        toast.success("mark all as read successfully");
+      }
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
   useEffect(() => {
     fetchNotification(page, limit);
   }, [page]);
@@ -28,6 +42,7 @@ function Notificaton() {
             stay updated with your workspace activity
           </p>
         </div>
+        <Toaster></Toaster>
 
         <span>
           <Bell></Bell>
@@ -41,13 +56,18 @@ function Notificaton() {
             <span>{unReadNotification} Unread</span>
           </div>
         </div>
-        <button>Mark all as read</button>
+        <button
+          onClick={markallasReadHandler}
+          className="px-6 py-2 bg-accent text-white font-medium text-sm cursor-pointer  rounded-full "
+        >
+          Mark all as read
+        </button>
       </div>
       <div className="flex gap-10">
         <button className="px-4 font-medium py-2 bg-dark text-white  rounded-full">
           All
         </button>
-        <button>Unread(3)</button>
+        <button>Unread({unReadNotification})</button>
         <button>Read</button>
       </div>
       <div className="w-full flex flex-col   gap-3">

@@ -15,3 +15,16 @@ export const getNotification = async (page, limit) => {
     throw new Error(error);
   }
 };
+
+export const markAllAsRaed = async()=>{
+  try{
+    const response = await api.patch('/notification/read-all')
+    const data = response.data
+    return data
+
+  }catch(err){
+    const error = err.response.data.message
+    console.error('notification api error is mark all as read' , err.message)
+    throw new Error(error)
+  }
+}
