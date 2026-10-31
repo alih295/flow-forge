@@ -21,6 +21,7 @@ const taskRoute = require("../src/routes/task.route");
 const dashboardRoute = require("../src/routes/dashboard.route");
 const notificationRoute = require("../src/routes/notification.route");
 const commentRoute = require("../src/routes/comment.route");
+const activityRoutes = require('../src/routes/activity.route')
 
 // all Appi's are use here
 app.use("/api", authRoute);
@@ -31,6 +32,7 @@ app.use("/api", taskRoute);
 app.use("/api", dashboardRoute);
 app.use("/api", notificationRoute);
 app.use("/api", commentRoute);
+app.use('/api' , activityRoutes)
 
 app.get("/health", (req, res) => {
   res.send("good");

@@ -1,7 +1,6 @@
 import React from "react";
 
 function ActiviyCard({item}) {
-    console.log(item)
   return (
     <div className="w-full flex  gap-5 bg-white overflow-hidden rounded-br-full shadow-xs  p-2 px-4 ">
       <div className="shrink-0  ">
