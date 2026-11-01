@@ -1,11 +1,12 @@
 import React from 'react'
+import { LoaderPinwheel } from 'lucide-react'
 
 function Loader() {
   return (
    <section className='w-full h-full
-    flex items-center justify-center' >
-   <div className='w-5  rounded-full border-b border-t border-(--border-accent) h-5  animate-spin  flex items-center justify-center'> 
-
+    flex items-center p-2 justify-center' >
+   <div className='    flex items-center justify-center'> 
+    <LoaderPinwheel size={40} className=' animate-spin' />
    </div>
    </section>
   )

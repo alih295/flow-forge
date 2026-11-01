@@ -11,6 +11,7 @@ import TaskList from "../../components/TaskList";
 import KanbanBoard from "../../components/KanbanBoard";
 import { fetchTasks } from "../../services/TaskServices";
 import TaskModel from "../../components/TaskModel";
+import Loader from "../../components/Loader";
 
 function TaskManagement() {
   const [taskView, setTaskView] = useState("list");
@@ -21,11 +22,12 @@ function TaskManagement() {
   const [todoTask, setTodoTask] = useState(0);
   const [inProgressTask, setInProgressTask] = useState(0);
   const [childRender, setChildRender] = useState(0)
+  const [search, setSearch] = useState('')
   useEffect(() => {
     const getTasks = async () => {
       try {
         setLoading(true);
-        const data = await fetchTasks();
+        const data = await fetchTasks(search);
         if (data.success) {
           setTasks(data.tasks);
           setTotalTask(data.totalTask);
@@ -40,7 +42,7 @@ function TaskManagement() {
       }
     };
     getTasks();
-  }, [ childRender ]);
+  }, [ childRender , search ]);
 
 
   return (
@@ -102,8 +104,8 @@ function TaskManagement() {
         <div className="w-full mt-5  flex items-center justify-between ">
           <div className="w-[83%] flex gap-2 p-2 items-center justify-start  border border-border rounded-lg ">
             <Search size={18} />{" "}
-            <input
-              className="w-full outline-none "
+            <input value={search} onChange={(e)=> setSearch(e.target.value)}
+              className="w-full  outline-none "
               type="search"
               placeholder="search tasks"
             />{" "}
@@ -117,11 +119,14 @@ function TaskManagement() {
           className="w-full border  rounded-xl  border-border mt-10 p-2
         "
         >
-          {taskView === "list" ? (
+          {
+            loading ? <div className="w-full flex items-center justify-center "><Loader/></div> : taskView === "list" ? (
             <TaskList data={tasks} setChildRender={setChildRender}  />
           ) : (
             <KanbanBoard data={tasks} />
           )}
+          
+         
         </div>
       </div>
     </div>

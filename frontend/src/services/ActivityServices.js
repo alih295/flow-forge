@@ -1,11 +1,11 @@
 import api from "../Api/Api";
 
 export const fetchActivityLog = async (
-  search,
+  {search,
   workspace,
   page,
   action,
-  limit,
+  limit,}
 ) => {
   try {
     const response = await api.get("/get-activity", {

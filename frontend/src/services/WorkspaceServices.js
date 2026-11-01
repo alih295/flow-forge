@@ -13,10 +13,10 @@ export const createWorkspace = async ({workspaceData}) => {
   }
 };
 
-export const fetchWorkspace = async (page, limit) => {
+export const fetchWorkspace = async (page, limit,search , stage) => {
   try {
     const response = await api.get("/workspace/get", {
-      params: { page, limit },
+      params: { page, limit , search , stage },
     });
     const data = response.data;
     return data;

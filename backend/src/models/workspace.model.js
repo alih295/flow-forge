@@ -17,7 +17,7 @@ const workspaceSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["active", "archive"],
+      enum: ["active", "blocked"],
       default: "active",
     },
   },

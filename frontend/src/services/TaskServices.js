@@ -23,9 +23,11 @@ export const fetchWorkspaceMember = async (workspaceId) => {
   }
 };
 
-export const fetchTasks = async () => {
+export const fetchTasks = async (search) => {
   try {
-    const response = await api.get("/workspace/tasks");
+    const response = await api.get("/workspace/tasks" , {params:{
+      search:search
+    }});
     const data = response.data;
     return data;
   } catch (err) {

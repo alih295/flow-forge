@@ -2,6 +2,7 @@ const { default: mongoose } = require("mongoose");
 const workspaceMemberModel = require("../models/workspace.member.model");
 const activityLogModel = require("../models/activity.log.model");
 const workspaceModel = require("../models/workspace.model");
+const userModel = require('../models/user.model')
 
 const getActivityLog = async (req, res, next) => {
   try {
@@ -9,7 +10,7 @@ const getActivityLog = async (req, res, next) => {
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
     const skip = (page - 1) * limit;
-
+    console.log(workspace)
     const filter = {};
 
     if (req.user.role !== "admin") {
@@ -37,7 +38,7 @@ const getActivityLog = async (req, res, next) => {
       filter.workspace = new mongoose.Types.ObjectId(workspace);
     }
     if (action) {
-      filter.action = action;
+      filter.entityType = action;
     }
 
     if (search.trim()) {
@@ -49,18 +50,16 @@ const getActivityLog = async (req, res, next) => {
         .find({
           $or: [{ name: regex }, { email: regex }],
         })
-        .select(_id);
+        .select('_id');
       const userIds = matchUsers.map((user) => user._id);
-      filter.$or = [{ description: regex }, { user: { $or: userIds } }];
+      filter.$or = [{ description: regex }, { user: { $in: userIds } }];
     }
 
     const [activities, totalActivities] = await Promise.all([
-      (
-         activityLogModel
-          .find(filter)
-          .populate("user", "name email profile")
-          .populate("workspace", "name")
-      )
+      activityLogModel
+        .find(filter)
+        .populate("user", "name email profile")
+        .populate("workspace", "name")
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit),
@@ -68,15 +67,13 @@ const getActivityLog = async (req, res, next) => {
       activityLogModel.countDocuments(filter),
     ]);
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        activities,
-        currentPage: page,
-        totalActivities,
-        totalPage: Math.ceil(totalActivities / limit),
-      });
+    return res.status(200).json({
+      success: true,
+      activities,
+      currentPage: page,
+      totalActivities,
+      totalPage: Math.ceil(totalActivities / limit),
+    });
   } catch (err) {
     return next(err);
   }
@@ -86,9 +83,7 @@ const getActivityWorkspaces = async (req, res, next) => {
   try {
     let workspaceIds;
     if (req.user.role === "admin") {
-      workspaceIds = await workspaceModel
-        .find({ })
-        .select("_id name");
+      workspaceIds = await workspaceModel.find({}).select("_id name");
     } else {
       const membership = await workspaceMemberModel
         .find({ user: req.user._id, status: "active" })
@@ -104,4 +99,4 @@ const getActivityWorkspaces = async (req, res, next) => {
   }
 };
 
-module.exports = { getActivityLog , getActivityWorkspaces };
+module.exports = { getActivityLog, getActivityWorkspaces };

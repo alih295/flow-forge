@@ -5,7 +5,7 @@ const workspaceMemberModel = require("../models/workspace.member.model");
 const createActivityLog = require("../services/activity.log.service");
 const createNotification = require("../services/notification.service");
 const { getIO } = require("../socket/socket");
-const activityLogModel = require('../models/activity.log.model')
+const activityLogModel = require("../models/activity.log.model");
 
 const createTask = async (req, res, next) => {
   try {
@@ -136,7 +136,7 @@ const updateTaskDetails = async (req, res, next) => {
       task.assignedTo = assignedTo;
       await createNotification({
         senderId: req.user._id,
-        workspace:task.workspace._id,
+        workspace: task.workspace._id,
         recipientId: assignedTo,
         workspaceId: req.workspace._id,
         type: "update_task_details",
@@ -213,7 +213,6 @@ const updateTaskStatus = async (req, res, next) => {
       entityType: "task",
       entityId: task._id,
     });
-    
 
     return res.status(200).json({ success: true, task });
   } catch (err) {
@@ -272,15 +271,32 @@ const getWorkspaceMember = async (req, res, next) => {
 const getAllTasks = async (req, res, next) => {
   try {
     const isAdmin = req.user.role === "admin";
+    const { search } = req.query;
+    let filter = {};
 
     if (!isAdmin) {
       const err = new Error("you can not access this route");
       err.statusCode = 403;
       return next(err);
     }
+    if (search?.trim()) {
+      const searchText = search.trim();
+      const escapedSearch = searchText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const regex = new RegExp(escapedSearch, "i");
+
+      filter.$or = [
+        { title: regex },
+        { description: regex },
+        { status: regex },
+        { priority: regex },
+      ];
+    }
     const [tasks, completedTask, inProgressTask, todoTask, totalTask] =
       await Promise.all([
-        taskModel.find({}).populate("workspace").populate("assignedTo", "name"),
+        taskModel
+          .find(filter)
+          .populate("workspace")
+          .populate("assignedTo", "name"),
 
         taskModel.countDocuments({
           status: "completed",
@@ -329,12 +345,14 @@ const getTaskById = async (req, res, next) => {
       err.statusCode = 403;
       return next(err);
     }
-    const comment = await commentModel.find({
-      task: task._id,
-      workspace: task.workspace,
-    }).populate('user' , 'name profile email');
-    const taskActivity = await activityLogModel.find({entityId:task._id})
-    return res.status(200).json({ success: true, task, comment,taskActivity });
+    const comment = await commentModel
+      .find({
+        task: task._id,
+        workspace: task.workspace,
+      })
+      .populate("user", "name profile email");
+    const taskActivity = await activityLogModel.find({ entityId: task._id });
+    return res.status(200).json({ success: true, task, comment, taskActivity });
   } catch (err) {
     return next(err);
   }
@@ -348,5 +366,5 @@ module.exports = {
   deleteTask,
   getWorkspaceMember,
   getAllTasks,
-  getTaskById
+  getTaskById,
 };

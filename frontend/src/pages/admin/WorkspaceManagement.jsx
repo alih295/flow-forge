@@ -26,11 +26,13 @@ function WorkspaceManagement() {
   const [taskModel, setTaskModel] = useState(false);
   const [mode, setMode] = useState("create");
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
+  const [search, setSearch] = useState('')
+  const [stage, setStage] = useState('')
   useEffect(() => {
     const getWorkspace = async () => {
       try {
         setLoading(true);
-        const response = await fetchWorkspace(page, limit);
+        const response = await fetchWorkspace(page, limit , search ,stage  );
         setWorkspace(response.workspace);
         setTotalPage(response?.totalPages);
       } catch (err) {
@@ -40,7 +42,7 @@ function WorkspaceManagement() {
       }
     };
     getWorkspace();
-  }, [page, deleteLoading, taskModel, memberModel]);
+  }, [page, deleteLoading, taskModel, memberModel , stage , search]);
   const navigate = useNavigate();
   const handleDelet = async (id) => {
     try {
@@ -81,15 +83,15 @@ function WorkspaceManagement() {
       </div>
 
       <div className="w-full mt-5 flex py-2 gap-10">
-        <input
+        <input value={search} onChange={(e)=>setSearch(e.target.value)}
           placeholder="search wokspaces..."
           className="w-64 px-6 outline-none  py-2.5 border border-border rounded-lg focus:border-primary"
           type="search"
         />
-        <select className="w-52 border px-4 border-border rounded-lg">
-          <option disabled>status </option>{" "}
-          <option value="active">active</option>{" "}
-          <option value="blocked">blocked</option>
+        <select onChange={(e)=>setStage(e.target.value)} value={stage} className="w-52 border px-4 border-border rounded-lg">
+          <option value={''} disabled>status </option>
+          <option value="active">Active</option>{" "}
+          <option value="blocked">Blocked</option>
         </select>
       </div>
       <div className="w-full overflow-hidden mt-5 rounded-xl ">

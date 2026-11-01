@@ -61,17 +61,30 @@ const getWorkspaces = async (req, res, next) => {
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 10;
     const skip = (page - 1) * limit;
+    const { search, stage } = req.query;
+    let filter = {};
 
     let workspace;
     let totalWorkspace;
 
+    if (search?.trim()) {
+      const searchText = search.trim();
+      const escapedSearch = searchText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const regex = new RegExp(escapedSearch, "i");
+
+      filter.$or = [{ name: regex }, { description: regex }];
+    }
+    if (stage) {
+      filter.status = stage;
+    }
+
     if (req.user.role === "admin") {
       workspace = await workspaceModel
-        .find()
+        .find(filter)
         .skip(skip)
         .limit(limit)
         .populate("owner", "-password");
-      totalWorkspace = await workspaceModel.countDocuments();
+      totalWorkspace = await workspaceModel.countDocuments(filter);
     } else {
       const memberShip = await workspaceMemberModel
         .find({ user: req.user._id, status: "active" })
@@ -82,7 +95,20 @@ const getWorkspaces = async (req, res, next) => {
             select: "-password",
           },
         });
-      const allWorkspace = memberShip.map((item) => item.workspace);
+      const allWorkspace = memberShip
+        .filter((item) => item.workspace)
+        .map((item) => item.workspace);
+      const filteredWorkspace = allWorkspace.filter((item) => {
+        const matchesSearch =
+          !search ||
+          item.name?.toLowerCase().includes(search.trim().toLowerCase()) ||
+          item.description?.toLowerCase().includes(search.trim().toLowerCase());
+
+        const matchesStage = !stage || item.status === stage;
+
+        return matchesSearch && matchesStage;
+      });
+
       members = await workspaceMemberModel.countDocuments({
         workspace: workspace._id,
         status: "active",
@@ -98,11 +124,11 @@ const getWorkspaces = async (req, res, next) => {
           status: "active",
         });
         item = item.toObject();
+
         item.members = members;
         return item;
       }),
     );
-
     return res.status(200).json({
       success: true,
       totalPages: Math.ceil(totalWorkspace / limit),
