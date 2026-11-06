@@ -65,12 +65,12 @@ function AdminLayout() {
   ];
 
   return (
-    <main className="w-full relative h-screen   font-Montseerat">
+    <main className="w-full relative h-screen   font-[Montseerat]">
       <Header user={user} />
       <div className="w-full flex items-center justify-between  h-[calc(100%-80px)]">
         <Aside data={nav} />
 
-        <div className="w-[80%] h-full overflow-x-auto ">
+        <div className="w-[80%] h-full overflow-y-auto ">
           <Outlet />
         </div>
       </div>

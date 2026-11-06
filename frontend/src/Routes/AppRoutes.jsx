@@ -20,6 +20,7 @@ import TaskManagement from "../pages/admin/TaskManagement";
 import ViewTask from "../pages/admin/ViewTask";
 import Notificaton from "../pages/admin/Notificaton";
 import ActivityLog from "../pages/admin/ActivityLog";
+import Dashboard from "../pages/member/Dashboard";
 
 function AppRoutes() {
   return (
@@ -73,7 +74,7 @@ function AppRoutes() {
           }
         >
           <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={"user dashboard"} />
+          <Route path="dashboard" element={<Dashboard/>} />
         </Route>
       </Routes>
     </Router>

@@ -1,9 +1,12 @@
 import React, { useState } from "react";
+import { useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { UserContext } from "../Context/AppContext";
 
 function Aside({ data }) {
   const location = useLocation();
   const [current, setCurrent] = useState(null);
+  const {user} = useContext(UserContext)
 
   return (
     <aside
@@ -21,7 +24,7 @@ function Aside({ data }) {
           <div key={sectionIdx} className="w-full mb-2">
             
             <h1
-              className={`text-xl font-semibold p-2 rounded px-2 ${
+              className={`text-xl font-semibold p-2 uppercase rounded px-2 ${
                 isSectionActive ? "bg-accent text-white" : "text-text"
               }`}
             >
@@ -52,6 +55,12 @@ function Aside({ data }) {
           </div>
         );
       })}
+
+
+      {
+        user.role === 'admin' ? '': <button className="w-full py-2 bg-red-500 text-white font-medium rounded-xl transition-colors duration-300 hover:bg-red-600 cursor-pointer" >Logout</button>  
+      }
+
     </aside>
   );
 }

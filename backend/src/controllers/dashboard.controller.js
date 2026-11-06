@@ -10,7 +10,11 @@ const getDashboardData = async (req, res, next) => {
 
     const totalUsers = await userModel.countDocuments();
 
-    const recentUser = await userModel.find().select("name role email status").sort({createdAt:-1}).limit(10) 
+    const recentUser = await userModel
+      .find()
+      .select("name role email status")
+      .sort({ createdAt: -1 })
+      .limit(10);
 
     const totalTasks = await taskModel.countDocuments();
 
@@ -22,9 +26,11 @@ const getDashboardData = async (req, res, next) => {
       status: "completed",
     });
 
-    const todoTask = await taskModel.countDocuments({status:'todo'})
+    const todoTask = await taskModel.countDocuments({ status: "todo" });
 
-    const inprogressTask = await taskModel.countDocuments({status:'in-progress'})
+    const inprogressTask = await taskModel.countDocuments({
+      status: "in-progress",
+    });
 
     return res.status(200).json({
       success: true,
@@ -36,7 +42,7 @@ const getDashboardData = async (req, res, next) => {
         completedTasks,
         recentUser,
         todoTask,
-        inprogressTask
+        inprogressTask,
       },
     });
   } catch (err) {
@@ -46,9 +52,11 @@ const getDashboardData = async (req, res, next) => {
 
 const workspaceData = async (req, res, next) => {
   try {
-    const workspaceMembers = await workspaceMemberModel.find({
-      workspace: req.workspace._id,
-    }).populate('user' , 'name email profile');
+    const workspaceMembers = await workspaceMemberModel
+      .find({
+        workspace: req.workspace._id,
+      })
+      .populate("user", "name email profile");
     const totalTasks = await taskModel.countDocuments({
       workspace: req.workspace._id,
     });
@@ -80,35 +88,96 @@ const workspaceData = async (req, res, next) => {
       });
       const todoTask = await taskModel.find({
         workspace: req.workspace._id,
-        assignedTo: req.user._id,status:'todo'
+        assignedTo: req.user._id,
+        status: "todo",
       });
       const inprogressTasks = await taskModel.find({
         workspace: req.workspace._id,
         assignedTo: req.user._id,
-        status:'in-progress'
+        status: "in-progress",
       });
       const completedTasks = await taskModel.find({
         workspace: req.workspace._id,
         assignedTo: req.user._id,
-        status:'completed'
+        status: "completed",
       });
-      return res.status(200).json({success:true , assignedTasks , todoTask,completedTasks,inprogressTasks})
+      return res.status(200).json({
+        success: true,
+        assignedTasks,
+        todoTask,
+        completedTasks,
+        inprogressTasks,
+      });
     }
   } catch (err) {
     return next(err);
   }
 };
 
-const getRecentActivity = async(req,res,next)=>{
-  try{
-    const recentActivity = await activityLogModel.find().sort({createdAt:-1}).limit(5).populate("user" , "name profile")
-    return res.status(200).json({success:true , recentActivity})
-
-  }catch(err){
-    return next(err)
+const getRecentActivity = async (req, res, next) => {
+  try {
+    const recentActivity = await activityLogModel
+      .find()
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .populate("user", "name profile");
+    return res.status(200).json({ success: true, recentActivity });
+  } catch (err) {
+    return next(err);
   }
-}
+};
+const getMemberDashboardData = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
 
+    const [
+      myWorkspaces,
+      myTasks,
+      recentActivity,
+      completedTask,
+      inProgressTask,
+    ] = await Promise.all([
+      workspaceMemberModel
+        .find({ user: userId, status: "active" })
+        .populate("workspace", "name description"),
 
+      taskModel.find({ assignedTo: userId }),
 
-module.exports = { getDashboardData , workspaceData , getRecentActivity };
+      activityLogModel
+        .find({ user: userId })
+        .sort({ createdAt: -1 })
+        .limit(5),
+
+      taskModel.countDocuments({
+        assignedTo: userId,
+        status: "completed",
+      }),
+
+      taskModel.countDocuments({
+        assignedTo: userId,
+        status: "in-progress",
+      }),
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        myWorkspaces,
+        myTasks,
+        recentActivity,
+        completedTask,
+        inProgressTask,
+        totalTasks: myTasks.length,
+      },
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+module.exports = {
+  getDashboardData,
+  workspaceData,
+  getRecentActivity,
+  getMemberDashboardData,
+};

@@ -5,6 +5,7 @@ const {
   getDashboardData,
   workspaceData,
   getRecentActivity,
+  getMemberDashboardData,
 } = require("../controllers/dashboard.controller");
 const authWorkspace = require("../middleware/authorize.workspace");
 
@@ -26,5 +27,7 @@ router.get(
   authorizeRole("admin"),
   getRecentActivity,
 );
+
+router.get('/dashboard/member' , authUser ,getMemberDashboardData )
 
 module.exports = router;
