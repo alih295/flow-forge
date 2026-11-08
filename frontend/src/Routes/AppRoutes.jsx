@@ -21,6 +21,7 @@ import ViewTask from "../pages/admin/ViewTask";
 import Notificaton from "../pages/admin/Notificaton";
 import ActivityLog from "../pages/admin/ActivityLog";
 import Dashboard from "../pages/member/Dashboard";
+import Workspace from "../pages/member/Workspace";
 
 function AppRoutes() {
   return (
@@ -75,6 +76,8 @@ function AppRoutes() {
         >
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard/>} />
+          <Route path="workspaces" element={<Workspace/>} />
+       
         </Route>
       </Routes>
     </Router>
