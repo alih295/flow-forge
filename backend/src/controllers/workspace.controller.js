@@ -98,21 +98,7 @@ const getWorkspaces = async (req, res, next) => {
       const allWorkspace = memberShip
         .filter((item) => item.workspace)
         .map((item) => item.workspace);
-      const filteredWorkspace = allWorkspace.filter((item) => {
-        const matchesSearch =
-          !search ||
-          item.name?.toLowerCase().includes(search.trim().toLowerCase()) ||
-          item.description?.toLowerCase().includes(search.trim().toLowerCase());
 
-        const matchesStage = !stage || item.status === stage;
-
-        return matchesSearch && matchesStage;
-      });
-
-      members = await workspaceMemberModel.countDocuments({
-        workspace: workspace._id,
-        status: "active",
-      });
       totalWorkspace = allWorkspace.length;
       workspace = allWorkspace.slice(skip, skip + limit);
     }
@@ -123,7 +109,12 @@ const getWorkspaces = async (req, res, next) => {
           workspace: item._id,
           status: "active",
         });
+        const tasks = await taskModel.countDocuments({
+          assignedTo: req.user._id,
+          workspace: item._id,
+        });
         item = item.toObject();
+        item.tasks = tasks;
 
         item.members = members;
         return item;
