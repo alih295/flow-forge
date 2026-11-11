@@ -358,6 +358,33 @@ const getTaskById = async (req, res, next) => {
   }
 };
 
+const getTask = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+
+    const [totalTask, todoTask, inProgressTask, completedTask] =
+      await Promise.all([
+        taskModel
+          .find({ assignedTo: userId })
+          .populate("workspace")
+          .populate("createdBy"),
+        taskModel.countDocuments({ assignedTo: userId, status: "todo" }),
+        taskModel.countDocuments({ assignedTo: userId, status: "in-progress" }),
+        taskModel.countDocuments({ assignedTo: userId, status: "completed" }),
+      ]);
+
+    res.status(200).json({
+      success: true,
+      totalTask,
+      todoTask,
+      inProgressTask,
+      completedTask,
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
+
 module.exports = {
   createTask,
   getTasks,
@@ -367,4 +394,5 @@ module.exports = {
   getWorkspaceMember,
   getAllTasks,
   getTaskById,
+  getTask,
 };

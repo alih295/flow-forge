@@ -90,3 +90,14 @@ export const updateTaskStatus = async ({workspaceId ,taskId , taskStatus})=>{
     throw new Error(error)
   }
 }
+
+export const fetchMemberTasks = async ()=>{
+  try{
+    const response = await api.get('/workspace/task')
+    const data = response.data
+    return data
+  }catch(err){
+    const error = err.response.data.message
+    throw new Error(error)
+  }
+} 
