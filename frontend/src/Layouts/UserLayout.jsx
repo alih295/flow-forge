@@ -36,7 +36,7 @@ function UserLayout() {
         {
           id: 5,
           name: "Comments",
-          link: "/user/notifications",
+          link: "/user/comments",
         },
         {
           id: 6,
@@ -56,7 +56,7 @@ function UserLayout() {
         {
           id: 7,
           name: "My Profile",
-          link: "/user/settings",
+          link: "/user/profile",
         },
         {
           id: 7,
