@@ -145,4 +145,25 @@ const updateComment = async (req, res, next) => {
   }
 };
 
-module.exports = { createComment, getComments, deleteComments, updateComment };
+
+const getMemberComments = async(req,res,next)=>{
+  try{
+    const userId = req.user._id
+
+    const comment = await commentModel.find({user:userId}).populate('wokspace' , 'name').populate('task' , 'title')
+    
+    return res.status(200).json({success:true , comment})
+
+
+
+
+
+
+
+  }catch(err){
+    return next(err)
+  }
+}
+
+
+module.exports = { createComment, getComments, deleteComments, updateComment , getMemberComments };

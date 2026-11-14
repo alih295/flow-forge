@@ -24,6 +24,8 @@ import Dashboard from "../pages/member/Dashboard";
 import Workspace from "../pages/member/Workspace";
 import MemberTask from "../pages/member/MemberTask";
 import MemberComments from "../pages/member/MemberComments";
+import MemberNotification from "../pages/member/MemberNotification";
+import MemberActivity from "../components/member/activityLog/MemberActivity";
 
 function AppRoutes() {
   return (
@@ -81,6 +83,8 @@ function AppRoutes() {
           <Route path="workspaces" element={<Workspace/>} />
           <Route path="tasks" element={<MemberTask/>} />
           <Route path="comments" element={<MemberComments/>} />
+          <Route path="notifications" element={<MemberNotification/>} />
+          <Route path="activity" element={<MemberActivity/>} />
 
        
         </Route>

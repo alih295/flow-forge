@@ -1,8 +1,30 @@
-import { Filter, Search } from "lucide-react";
+import { Filter, Loader, Search } from "lucide-react";
 import React from "react";
 import CommentsCard from "../../components/member/comments/CommentsCard";
+import { useEffect } from "react";
+import { getMemberCommet } from "../../services/commentServices";
+import { useState } from "react";
 
 function MemberComments() {
+  const [loading, setLoading] = useState(false);
+  const [comments, setComments] = useState([]);
+
+  useEffect(() => {
+    const fetchMemberComments = async () => {
+      try {
+        setLoading(true);
+        const response = await getMemberCommet();
+        setComments(response.comment);
+      } catch (err) {
+        console.error(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMemberComments();
+  }, []);
+
   return (
     <section className="w-full min-h-screen flex flex-col gap-10 p-6 ">
       <div className="w-full">
@@ -39,8 +61,15 @@ function MemberComments() {
       </div>
 
       <div className="w-full flex flex-col gap-4">
-        <CommentsCard />
-        <CommentsCard />
+        {loading ? (
+          <Loader />
+        ) : comments.length <= 0 ? (
+          <div className="w-full text-center text-muted text-sm "> you don't have any comment yet </div>
+        ) : (
+          comments.map((item, idx) => {
+            return <CommentsCard data={item} />;
+          })
+        )}
       </div>
     </section>
   );

@@ -1,7 +1,6 @@
 import api from "../Api/Api";
 
 export const getNotification = async (page, limit) => {
-  console.log(page)
   try {
     const response = await api.get("/notifications", {
       params: { page, limit },

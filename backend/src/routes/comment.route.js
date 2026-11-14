@@ -7,6 +7,7 @@ const {
   getComments,
   deleteComments,
   updateComment,
+  getMemberComments,
 } = require("../controllers/comment.controller");
 const router = express.Router();
 const { body } = require("express-validator");
@@ -33,5 +34,8 @@ router.delete(
   deleteComments,
 );
 router.patch("/workspace/:workspaceId/tasks/:taskId/comment/:commentId" , authUser , authWorkspace , updateComment)
+
+
+router.get('/member/comments' , authUser , getMemberComments)
 
 module.exports = router;
