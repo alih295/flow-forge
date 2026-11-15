@@ -10,7 +10,6 @@ const getActivityLog = async (req, res, next) => {
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
     const skip = (page - 1) * limit;
-    console.log(workspace)
     const filter = {};
 
     if (req.user.role !== "admin") {
@@ -41,9 +40,9 @@ const getActivityLog = async (req, res, next) => {
       filter.entityType = action;
     }
 
-    if (search.trim()) {
+    if (search?.trim()) {
       const searchText = search.trim();
-      const escapedSearch = searchText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const escapedSearch = searchText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
 
       const regex = new RegExp(escapedSearch, "i");
       const matchUsers = await userModel

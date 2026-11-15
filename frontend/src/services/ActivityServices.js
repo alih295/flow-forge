@@ -5,7 +5,7 @@ export const fetchActivityLog = async (
   workspace,
   page,
   action,
-  limit,}
+  limit,} = {}
 ) => {
   try {
     const response = await api.get("/get-activity", {

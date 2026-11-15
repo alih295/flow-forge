@@ -25,7 +25,7 @@ import Workspace from "../pages/member/Workspace";
 import MemberTask from "../pages/member/MemberTask";
 import MemberComments from "../pages/member/MemberComments";
 import MemberNotification from "../pages/member/MemberNotification";
-import MemberActivity from "../components/member/activityLog/MemberActivity";
+import MemberActivity from "../pages/member/activityLog/MemberActivity";
 
 function AppRoutes() {
   return (
@@ -50,10 +50,10 @@ function AppRoutes() {
           <Route path="workspaces" element={<WorkspaceManagement />} />
           <Route path="workspace/view/:id" element={<ViewWorkspace />} />
           <Route path="user/:id" element={<ViewUser />} />
-          <Route  path="tasks"  element={<TaskManagement/>} />
-          <Route  path="tasks/view/:id"  element={<ViewTask/>} />
-          <Route  path="notifications"   element={<Notificaton/>} />
-          <Route  path="activity"  element={<ActivityLog/>}     />
+          <Route path="tasks" element={<TaskManagement />} />
+          <Route path="tasks/view/:id" element={<ViewTask />} />
+          <Route path="notifications" element={<Notificaton />} />
+          <Route path="activity" element={<ActivityLog />} />
         </Route>
 
         {/* manager Routes aare called here */}
@@ -79,14 +79,12 @@ function AppRoutes() {
           }
         >
           <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<Dashboard/>} />
-          <Route path="workspaces" element={<Workspace/>} />
-          <Route path="tasks" element={<MemberTask/>} />
-          <Route path="comments" element={<MemberComments/>} />
-          <Route path="notifications" element={<MemberNotification/>} />
-          <Route path="activity" element={<MemberActivity/>} />
-
-       
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="workspaces" element={<Workspace />} />
+          <Route path="tasks" element={<MemberTask />} />
+          <Route path="comments" element={<MemberComments />} />
+          <Route path="notifications" element={<MemberNotification />} />
+          <Route path="activity" element={<MemberActivity />} />
         </Route>
       </Routes>
     </Router>
