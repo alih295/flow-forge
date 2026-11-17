@@ -65,15 +65,15 @@ function MemberActivity() {
       <div className="w-full flex items-center justify-between">
         <div className="w-[33%] p-4  bg-white  rounded-xl border border-border">
           <p className="text-sm text-muted mb-2">Total</p>
-          <h1 className="text-lg font-semibold ">128</h1>
+          <h1 className="text-lg font-semibold ">{activity.length}</h1>
         </div>
         <div className="w-[33%] p-4  bg-white  rounded-xl border border-border">
           <p className="text-sm text-muted mb-2">today</p>
-          <h1 className="text-lg font-semibold ">128</h1>
+          <h1 className="text-lg font-semibold ">05</h1>
         </div>
         <div className="w-[33%] p-4  bg-white  rounded-xl border border-border">
           <p className="text-sm text-muted mb-2">This Week</p>
-          <h1 className="text-lg font-semibold ">128</h1>
+          <h1 className="text-lg font-semibold ">08</h1>
         </div>
       </div>
 

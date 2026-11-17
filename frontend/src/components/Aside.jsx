@@ -1,28 +1,42 @@
 import React, { useState } from "react";
 import { useContext } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { UserContext } from "../Context/AppContext";
+import toast, { Toaster } from "react-hot-toast";
+import { logout } from "../services/AuthService";
 
 function Aside({ data }) {
   const location = useLocation();
   const [current, setCurrent] = useState(null);
-  const {user} = useContext(UserContext)
+  const { user } = useContext(UserContext);
+  const navigate = useNavigate();
+  const logoutHandler = async () => {
+    try {
+      const response = await logout();
+      if (response.succes) {
+        toast.success("logout sucessfully");
+        navigate("/login");
+      }
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
 
   return (
     <aside
       className="min-w-[15%] bg-bg font-Montserrat overflow-auto  shadow-[10px_0_15px_-3px_rgba(0,0,0,0.1)] h-full px-5 py-5
      flex flex-col gap-2   "
     >
+      <Toaster></Toaster>
+
       <h1 className="text-3xl text-text mb-5 font-bold ">FlowForge</h1>
       {data.map((section, sectionIdx) => {
-        // Check karein kya is section ka koi bhi item abhi active hai
         const isSectionActive = section.items.some(
           (subItem) => subItem.link === location.pathname,
         );
 
         return (
-          <div key={sectionIdx} className="w-full mb-2">
-            
+          <div key={section._id} className="w-full mb-2">
             <h1
               className={`text-xl font-semibold p-2 uppercase rounded px-2 ${
                 isSectionActive ? "bg-accent text-white" : "text-text"
@@ -56,11 +70,16 @@ function Aside({ data }) {
         );
       })}
 
-
-      {
-        user.role === 'admin' ? '': <button className="w-full py-2 bg-red-500 text-white font-medium rounded-xl transition-colors duration-300 hover:bg-red-600 cursor-pointer" >Logout</button>  
-      }
-
+      {user.role === "admin" ? (
+        ""
+      ) : (
+        <button
+          onClick={logoutHandler}
+          className="w-full py-2 bg-red-500 text-white font-medium rounded-xl transition-colors duration-300 hover:bg-red-600 cursor-pointer"
+        >
+          Logout
+        </button>
+      )}
     </aside>
   );
 }
