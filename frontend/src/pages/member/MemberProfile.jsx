@@ -1,5 +1,7 @@
 import { User } from 'lucide-react'
 import React from 'react'
+import AccoutnInformation from '../../components/member/profile/AccoutnInformation'
+import SecuritySetting from '../../components/member/profile/SecuritySetting'
 
 function MemberProfile() {
   return (
@@ -44,6 +46,8 @@ function MemberProfile() {
                 </div>
                 </div>  
         </div>
+        <AccoutnInformation/>
+        <SecuritySetting/>
     </section>
   )
 }

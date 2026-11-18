@@ -24,7 +24,7 @@ function Aside({ data }) {
 
   return (
     <aside
-      className="min-w-[15%] bg-bg font-Montserrat overflow-auto  shadow-[10px_0_15px_-3px_rgba(0,0,0,0.1)] h-full px-5 py-5
+      className="min-w-[15%] overflow-x-hidden relative bg-bg font-Montserrat overflow-auto  shadow-[10px_0_15px_-3px_rgba(0,0,0,0.1)] h-full  items-center py-5
      flex flex-col gap-2   "
     >
       <Toaster></Toaster>
@@ -45,7 +45,7 @@ function Aside({ data }) {
               {section.section}
             </h1>
 
-            <div className="w-full ml-3">
+            <div className="w-full ml-1">
               {section.items.map((subItem) => {
                 const isLinkActive = location.pathname === subItem.link;
 
@@ -73,9 +73,10 @@ function Aside({ data }) {
       {user.role === "admin" ? (
         ""
       ) : (
-        <button
+        <button 
           onClick={logoutHandler}
-          className="w-full py-2 bg-red-500 text-white font-medium rounded-xl transition-colors duration-300 hover:bg-red-600 cursor-pointer"
+          className="w-[90%] absolute bottom-5 left-1/2 -translate-x-1/2
+           py-2 bg-red-500 text-white font-medium rounded-xl transition-colors duration-300 hover:bg-red-600 cursor-pointer"
         >
           Logout
         </button>
